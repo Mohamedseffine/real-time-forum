@@ -65,3 +65,9 @@ type Message struct {
 	Reciever   string
 	RecieverId int
 }
+
+
+type Error struct {
+	StatusCode int
+	ErrorMessage string
+}
