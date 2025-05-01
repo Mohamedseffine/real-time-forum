@@ -1,6 +1,10 @@
 package objects
 
-import "time"
+import (
+	"time"
+
+	"github.com/gorilla/websocket"
+)
 
 type Post struct {
 	Username   string
@@ -12,6 +16,7 @@ type Post struct {
 	PostId     int
 	Reacts     []PostReaction
 	Comments   []Comment
+	Time       time.Time
 }
 
 type PostReaction struct {
@@ -37,6 +42,7 @@ type Comment struct {
 	CommentId int
 	Content   string
 	Reacts    []CommentReact
+	Time      time.Time
 }
 
 type User struct {
@@ -50,10 +56,10 @@ type User struct {
 	CreatedPosts []Post
 	LikedPosts   []Post
 	State        bool
+	Connection   *websocket.Conn
 }
 
-type Chat struct {
-}
+type Chat struct{}
 
 type Message struct {
 	MessageId  int
@@ -66,8 +72,7 @@ type Message struct {
 	RecieverId int
 }
 
-
 type Error struct {
-	StatusCode int
+	StatusCode   int
 	ErrorMessage string
 }
