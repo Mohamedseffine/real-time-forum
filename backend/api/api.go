@@ -7,4 +7,6 @@ import (
 
 func Multiplexer() {
 	http.HandleFunc("/ws", handlers.HandleWS)
+	http.HandleFunc("/", handlers.HomeHandler)
+	http.HandleFunc("/frontend/", handlers.HandleStatic)
 }
