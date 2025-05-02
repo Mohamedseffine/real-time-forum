@@ -1,0 +1,107 @@
+-- Users table
+CREATE TABLE
+    IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
+        gender VARCHAR(50) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(100) NOT NULL,
+        birth_date DATE,
+        creation_date DATETIME NOT NULL
+    );
+
+-- Posts table
+CREATE TABLE
+    IF NOT EXISTS posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id INTEGER NOT NULL,
+        title VARCHAR(100) NOT NULL,
+        creation_time DATETIME NOT NULL,
+        content TEXT,
+        FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- Categories table
+CREATE TABLE
+    IF NOT EXISTS categories (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category VARCHAR(50) UNIQUE NOT NULL
+    );
+
+-- Insert default categories
+INSERT
+OR IGNORE INTO categories (category)
+VALUES
+    ('Sport'),
+    ('Music'),
+    ('Movies'),
+    ('Science'),
+    ('Politics'),
+    ('Culture'),
+    ('Technology');
+
+-- Comments table
+CREATE TABLE
+    IF NOT EXISTS comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id INTEGER NOT NULL,
+        post_id INTEGER NOT NULL,
+        creation_date DATETIME NOT NULL,
+        FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
+    );
+
+-- Post reactions table
+CREATE TABLE
+    IF NOT EXISTS post_react (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id INTEGER NOT NULL,
+        post_id INTEGER NOT NULL,
+        react_type INTEGER NOT NULL,
+        FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
+    );
+
+-- Comment reactions table
+CREATE TABLE
+    IF NOT EXISTS comment_react (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id INTEGER NOT NULL,
+        comment_id INTEGER NOT NULL,
+        react_type INTEGER NOT NULL,
+        FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE
+    );
+
+-- Messages table
+CREATE TABLE
+    IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender_id INTEGER NOT NULL,
+        receiver_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- Sessions table
+CREATE TABLE
+    IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        token VARCHAR(500) NOT NULL,
+        created_at DATETIME NOT NULL,
+        expires_at DATETIME NOT NULL,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+CREATE TABLE
+    IF NOT EXISTS post_categories (
+        post_id INTEGER NOT NULL,
+        category_id INTEGER NOT NULL,
+        PRIMARY KEY (post_id, category_id),
+        FOREIGN KEY (post_id) REFERENCES posts (id),
+        FOREIGN KEY (category_id) REFERENCES categories (id)
+    );
