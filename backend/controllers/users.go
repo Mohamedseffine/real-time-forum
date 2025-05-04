@@ -1,6 +1,14 @@
 package controllers
 
-import "rt_forum/backend/objects"
+import (
+	"rt_forum/backend/objects"
+
+	
+)
 
 
 var User objects.User
+
+func InsertUser()  {
+	
+}
