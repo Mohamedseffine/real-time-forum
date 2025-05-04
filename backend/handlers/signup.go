@@ -1,13 +1,14 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 	"rt_forum/backend/objects"
 )
 
-func  HandleSignUp(w http.ResponseWriter, r *http.Request)  {
+func  HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB)  {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Content-Type","application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
