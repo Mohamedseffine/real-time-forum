@@ -19,7 +19,4 @@ func Multiplexer() {
 	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleSignUp(w, r, db)
 	})
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		handlers.Handlesignin(w, r, db)
-	})
 }
