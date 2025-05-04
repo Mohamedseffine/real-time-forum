@@ -1,5 +1,5 @@
 if (window["WebSocket"]) {
-    conn = new WebSocket("ws://" + document.location.host + "/ws")
+    conn = new WebSocket("ws://" + document.location.host + "/chat")
     conn.onopen =()=>{
         console.log("websockets open lol")
     }
@@ -128,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
 function showAuthForm(type) {
     const root = document.getElementById('root');
     root.innerHTML = ''; 
@@ -139,8 +138,17 @@ function showAuthForm(type) {
     formContainer.innerHTML = `
         <h2>${type === 'login' ? 'Login' : 'Sign Up'}</h2>
         <form class="auth-form">
-            <input type="text" name="gmail" placeholder="gmail" required>
             <input type="text" name="username" placeholder="Username" required>
+            ${type === 'signup' ? `
+            <input type="text" name="firstname" placeholder="First Name" required>
+            <input type="text" name="lastname" placeholder="Last Name" required>
+            <select name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+            <input type="email" name="gmail" placeholder="Email" required>
+            ` : ''}
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">${type === 'login' ? 'Login' : 'Sign Up'}</button>
         </form>
@@ -149,36 +157,54 @@ function showAuthForm(type) {
 
     root.appendChild(formContainer);
     
-document.querySelector('.auth-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = e.target.querySelector('input[name="username"]').value;
-    const password = e.target.querySelector('input[name="password"]').value;
-    const email = e.target.querySelector('input[name="gmail"]').value
-    const type = window.location.pathname.includes('signup') ? 'signup' : 'login';
-    console.log(type);
-    if (type ==  "signup"){
-        sendAuthData(email, username, password);
-    }else{
-        sendlogindata(email , username, password)
-    }
- 
-   
-});
-
-
-    // Add back button functionality
-    formContainer.querySelector('.back-btn').addEventListener('click', () => {
-        history.pushState(null, '', '/');
-        createBaseLayout();
+    document.querySelector('.auth-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        if (type === 'signup') {
+            const { username, password, firstname, lastname, gender, gmail } = data;
+            sendAuthData(gmail, username, password, firstname, lastname, gender);
+        } if (type === 'login') {
+            const { username, password } = data;
+            sendlogindata(username, password);
+        }
     });
 
+    document.querySelector('.back-btn').addEventListener('click', () => {
+        window.history.back();
+    });
+        // Add back button functionality
+        formContainer.querySelector('.back-btn').addEventListener('click', () => {
+            history.pushState(null, '', '/');
+            createBaseLayout();
+        });
+    
 }
 
-async function sendAuthData(email, username, password) {
+
+
+function formatDateFromTimestamp(ms) {
+    const date = new Date(ms);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  }
+  
+
+async function sendAuthData(email, username, password, firstname, lastname, gender) {
+    let ok = Date.now();
+    let createdat = formatDateFromTimestamp(ok)
     const authdata = {
+        firstname: firstname,
+        lastname:lastname,
+        gender:gender,
         email: email,
         username: username,
-        password: password
+        password: password,
+        createdat :createdat
     };
 
     try {
@@ -191,7 +217,7 @@ async function sendAuthData(email, username, password) {
         });
 
         if (res.ok) {
-            const data = await res.json(); // or res.text() if not JSON
+            const data = await res.json(); 
             console.log("Response data:", data);
             console.log("Auth data sent:", authdata);
             history.pushState(null, '', '/');
@@ -204,11 +230,13 @@ async function sendAuthData(email, username, password) {
     }
 }
 
-async function sendlogindata(email, username, password) {
-    const authdata = {
-        email: email,
+async function sendlogindata(username, password) {
+    const type = username.includes('@') ? "email" : "username";
+
+    const authData = {
         username: username,
-        password: password
+        password: password,
+        type: type
     };
 
     try {
@@ -217,19 +245,19 @@ async function sendlogindata(email, username, password) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(authdata)
+            body: JSON.stringify(authData)
         });
 
         if (res.ok) {
-            const data = await res.json(); // or res.text() if not JSON
+            const data = await res.json(); 
             console.log("Response data:", data);
-            console.log("Auth data sent:", authdata);
+            console.log("Auth data sent:", authData);
             history.pushState(null, '', '/');
             createBaseLayout();
         } else {
-            console.log("Server responded with an error:", res.status);
+            console.error("Server responded with an error:", res.status);
         }
     } catch (error) {
-        console.log("Error sending auth data:", error);
+        console.error("Error sending auth data:", error);
     }
 }
