@@ -7,9 +7,13 @@ import (
 )
 
 type LogData struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username     string    `json:"username"`
+	Email        string    `json:"email"`
+	Password     string    `json:"password"`
+	FamilyName   string    `json:"family_name"`
+	Name         string    `json:"name"`
+	Gender       string    `json:"gender"`
+	CreationDate time.Time `json:"creation_date"`
 }
 
 type Post struct {

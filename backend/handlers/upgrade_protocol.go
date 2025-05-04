@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
-
-	"rt_forum/backend/models"
+	"rt_forum/backend/objects"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,6 +17,7 @@ var websocketUpgrader = websocket.Upgrader{
 	},
 }
 
+var User objects.User
 func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	Conn, err := websocketUpgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -25,5 +25,5 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			"error": "can't upgrage the protocol",
 		})
 	}
-	models.User.Connection = Conn
+	User.Connection = Conn
 }
