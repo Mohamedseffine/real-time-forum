@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
-	"rt_forum/backend/controllers"
+	"rt_forum/backend/models"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,12 +18,12 @@ var websocketUpgrader = websocket.Upgrader{
 	},
 }
 
-func HandleWS(w http.ResponseWriter, r *http.Request) {
+func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	Conn, err := websocketUpgrader.Upgrade(w, r, nil)
 	if err != nil {
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": "can't upgrage the protocol",
 		})
 	}
-	controllers.User.Connection = Conn
+	models.User.Connection = Conn
 }

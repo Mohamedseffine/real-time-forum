@@ -1,0 +1,275 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f5f6fa;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Users Sidebar */
+.users-sidebar {
+    width: 280px;
+    background: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+}
+
+.users-header h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.user-item:hover {
+    background: #f8f9fa;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3498db;
+    margin-right: 15px;
+}
+
+.username {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 25px;
+    max-width: 800px;
+}
+
+.post-creator {
+    margin-bottom: 30px;
+}
+
+.post-creator textarea {
+    width: 100%;
+    height: 100px;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    resize: vertical;
+}
+
+.post-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Posts */
+.post {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.author-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #2ecc71;
+    margin-right: 15px;
+}
+
+.author-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.post-content {
+    margin-bottom: 15px;
+    color: #34495e;
+    line-height: 1.5;
+}
+
+.post-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.like-button, .comment-button {
+    background: none;
+    border: none;
+    color: #7f8c8d;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.like-button:hover, .comment-button:hover {
+    background: #f8f9fa;
+}
+
+/* Comments */
+.comments-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.comment {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+.comment-author {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.comment-text {
+    color: #34495e;
+}
+
+.comment-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.comment-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+}
+
+/* Chat Container */
+.chat-container {
+    position: fixed;
+    right: -350px;
+    top: 0;
+    width: 350px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+    transition: right 0.3s;
+    display: none;
+}
+
+/* Add more chat styles as needed */
+/* Auth Buttons */
+.auth-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 15px;
+}
+
+.login-btn, .signup-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.login-btn {
+    background: #3498db;
+    color: white;
+}
+
+.signup-btn {
+    background: #2ecc71;
+    color: white;
+}
+
+.login-btn:hover {
+    background: #2980b9;
+}
+
+.signup-btn:hover {
+    background: #27ae60;
+}
+
+/* Add margin to main container to prevent overlap */
+.app-container {
+    margin-top: 80px; /* Creates space below fixed auth buttons */
+    min-height: calc(100vh - 80px);
+}
+.auth-form-container {
+    max-width: 400px;
+    margin: 120px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.auth-form input {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.auth-form button {
+    background: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.auth-form button:hover {
+    background: #2980b9;
+}
+
+.back-btn {
+    margin-top: 15px;
+    background: transparent;
+    color: #3498db;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}

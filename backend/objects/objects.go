@@ -6,6 +6,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type LogData struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type Post struct {
 	Username   string
 	UserId     int

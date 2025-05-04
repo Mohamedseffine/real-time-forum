@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request)  {
+func HomeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB)  {
 	if r.Method != http.MethodGet {
 		
 	}
