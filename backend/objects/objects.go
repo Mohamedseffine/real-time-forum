@@ -18,12 +18,12 @@ type LogData struct {
 }
 
 type Post struct {
-	Username   string
-	UserId     int
+	Username   string   `json:"username"`
+	UserId     int      `json:"id"`
+	Content    string   `json:"content"`
+	Title      string   `json:"title"`
+	Categories []string `json:"categories"`
 	Ncomments  int
-	Content    string
-	Title      string
-	Categories []string
 	PostId     int
 	Reacts     []PostReaction
 	Comments   []Comment

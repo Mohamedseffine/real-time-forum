@@ -23,4 +23,8 @@ func Multiplexer() {
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		handlers.LoginHandler(w, r, db)
 	})
+
+	http.HandleFunc("/create_post", func(w http.ResponseWriter, r *http.Request) {
+		handlers.CreatePostHandler(w, r, db)
+	})
 }

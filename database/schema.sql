@@ -17,6 +17,7 @@ CREATE TABLE
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         creator_id INTEGER NOT NULL,
         title VARCHAR(100) NOT NULL,
+        username VARCHAR(50) NOT NULL,
         creation_time DATETIME NOT NULL,
         content TEXT,
         FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE
