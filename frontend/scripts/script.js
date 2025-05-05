@@ -51,19 +51,20 @@ function createBaseLayout() {
     const mainContent = document.createElement('div');
     mainContent.className = 'main-content';
     mainContent.innerHTML = `
-        <div class="categories-bar">
-        <div class="category-box">Sport</div>
-        <div class="category-box">Music</div>
-        <div class="category-box">Movies</div>
-        <div class="category-box">Science</div>
-        <div class="category-box">Politics</div>
-        <div class="category-box">Culture</div>
-        <div class="category-box">Technology</div>
-    </div>
-
-    <div class="post-creator">
+        <div class="post-creator">
         <input type="text" class="post-title" placeholder="Post title..." required>
         <textarea placeholder="Write your post content..."></textarea>
+
+        <div class="category-boxes">
+            <span class="category">Sport</span>
+            <span class="category">Music</span>
+            <span class="category">Movies</span>
+            <span class="category">Science</span>
+            <span class="category">Politics</span>
+            <span class="category">Culture</span>
+            <span class="category">Technology</span>
+        </div>
+
         <button class="post-button">Post</button>
     </div>
         <div class="posts-feed">
@@ -268,3 +269,54 @@ async function sendlogindata(username, password) {
 }
 
 
+document.addEventListener('DOMContentLoaded', () => {
+    // Toggle category selection
+    document.querySelectorAll('.category').forEach(cat => {
+        cat.addEventListener('click', () => {
+            cat.classList.toggle('selected');
+        });
+    });
+
+    // Handle post submission
+    document.querySelector('.post-button').addEventListener('click', async () => {
+        const title = document.querySelector('.post-title').value.trim();
+        const content = document.querySelector('.post-creator textarea').value.trim();
+        const selectedCategories = Array.from(document.querySelectorAll('.category.selected')).map(el => el.textContent);
+
+        if (!title || !content) {
+            alert('Please fill in both the title and content.');
+            return;
+        }
+
+        const payload = {
+            username: "JohnDoe", //replace when fix
+            id: 1,
+            title: title,
+            content: content,
+            categories: selectedCategories
+        };
+
+        try {
+            const res = await fetch('/create_post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text(); 
+                throw new Error(errorText || 'Failed to create post');
+            }
+
+            alert('Post created successfully!');
+            console.log(payload);
+            document.querySelector('.post-title').value = '';
+            document.querySelector('.post-creator textarea').value = '';
+            document.querySelectorAll('.category.selected').forEach(el => el.classList.remove('selected'));
+        } catch (err) {
+            alert(`Error: ${err.message}`);
+        }
+    });
+});
