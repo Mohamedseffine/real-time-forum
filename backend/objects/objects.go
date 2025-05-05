@@ -14,6 +14,7 @@ type LogData struct {
 	Name         string    `json:"firstname"`
 	Gender       string    `json:"gender"`
 	CreationDate time.Time `json:"creation_date"`
+	LogType      string    `json:"type"`
 }
 
 type Post struct {

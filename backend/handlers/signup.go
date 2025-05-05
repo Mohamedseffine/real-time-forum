@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"rt_forum/backend/helpers"
@@ -47,7 +48,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	if !helpers.IsvalidName(userdata.Name){
+	if !helpers.IsvalidName(userdata.Name) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -55,7 +56,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	if !helpers.IsvalidName(userdata.FamilyName){
+	if !helpers.IsvalidName(userdata.FamilyName) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -74,7 +75,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	userdata.Password = string(hash)
 	id, err := models.InsertUser(db, userdata)
-	if err!=nil {
+	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -83,11 +84,10 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	User.Id = int(id)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(userdata)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
-
-// w.Header().Set("Content-Type", "application/json")
-// w.WriteHeader(http.StatusOK)
-// err = json.NewEncoder(w).Encode(userdata)
-// if err != nil {
-// 	log.Fatal(err)
-// }

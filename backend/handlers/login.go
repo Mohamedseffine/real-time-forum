@@ -3,9 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
+	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
 )
 
@@ -30,6 +32,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
+	id, erro := models.ExtractUser(db, userdata.Password, userdata.Username, userdata.LogType)
+	if erro != "" {
+		fmt.Println(erro)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": erro,
+		})
+	}
+	fmt.Println(id)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(userdata)
@@ -37,3 +49,5 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		log.Fatal(err)
 	}
 }
+
+
