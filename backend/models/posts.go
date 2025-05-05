@@ -7,7 +7,7 @@ import (
 
 
 func InsertPost(db *sql.DB, postdata objects.Post) (int, error)  {
-	stm , err := db.Prepare(`INSERT INTO posts (creator_id, title, username, creation_time, content) VALUES (?, ?, ?, ?)`)
+	stm , err := db.Prepare(`INSERT INTO posts (creator_id, title, username, creation_time, content) VALUES (?, ?, ?, ?, ?)`)
 	if err != nil {
 		return -1, err
 	}
