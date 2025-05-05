@@ -224,9 +224,11 @@ async function sendAuthData(email, username, password, firstname, lastname, gend
 
         if (res.ok) {
             const data = await res.json();
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user_id', data.user_id);
-            localStorage.setItem('username', data.username);
+            console.log(data);
+            
+            // localStorage.setItem('token', data.token);
+            // localStorage.setItem('user_id', data.user_id);
+            // localStorage.setItem('username', data.username);
             history.pushState(null, '', '/');
             createBaseLayout();
         } else {

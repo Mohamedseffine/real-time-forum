@@ -89,12 +89,12 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	User.Id = int(id)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(userdata)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// err = json.NewEncoder(w).Encode(userdata)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	token, err := uuid.NewV4()
 	if err != nil {
