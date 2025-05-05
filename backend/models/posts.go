@@ -2,13 +2,13 @@ package models
 
 import (
 	"database/sql"
-	"rt_forum/backend/objects"
 	"time"
+
+	"rt_forum/backend/objects"
 )
 
-
-func InsertPost(db *sql.DB, postdata objects.Post) (int, error)  {
-	stm , err := db.Prepare(`INSERT INTO posts (creator_id, title, username, creation_time, content) VALUES (?, ?, ?, ?, ?)`)
+func InsertPost(db *sql.DB, postdata objects.Post) (int, error) {
+	stm, err := db.Prepare(`INSERT INTO posts (creator_id, title, username, creation_time, content) VALUES (?, ?, ?, ?, ?)`)
 	if err != nil {
 		return -1, err
 	}
@@ -16,15 +16,22 @@ func InsertPost(db *sql.DB, postdata objects.Post) (int, error)  {
 	if err != nil {
 		return -1, err
 	}
-	id, err:=res.LastInsertId()
+	id, err := res.LastInsertId()
 	if err != nil {
 		return -1, err
 	}
 	return int(id), nil
 }
 
-
-
 // func SelectCreatedPosts(db *sql.DB, )  {
-// 	stm, err:=
+//     stm, err:=
 // }
+
+func InsertCategories(db *sql.DB, postid int, categoryid int) error {
+	stm, err := db.Prepare(`INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)`)
+	if err != nil {
+		return err
+	}
+	_, err = stm.Exec(postid, categoryid)
+	return err
+}
