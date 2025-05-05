@@ -55,15 +55,16 @@ function createBaseLayout() {
         <input type="text" class="post-title" placeholder="Post title..." required>
         <textarea placeholder="Write your post content..."></textarea>
 
-        <div class="category-boxes">
-            <span class="category">Sport</span>
-            <span class="category">Music</span>
-            <span class="category">Movies</span>
-            <span class="category">Science</span>
-            <span class="category">Politics</span>
-            <span class="category">Culture</span>
-            <span class="category">Technology</span>
-        </div>
+            <div class="category-boxes">
+    <span class="category" id="1">Sport</span>
+    <span class="category" id="2">Music</span>
+    <span class="category" id="3">Movies</span>
+    <span class="category" id="4">Science</span>
+    <span class="category" id="5">Politics</span>
+    <span class="category" id="6">Culture</span>
+    <span class="category" id="7">Technology</span>
+            </div>
+
 
         <button class="post-button">Post</button>
     </div>
@@ -281,7 +282,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.post-button').addEventListener('click', async () => {
         const title = document.querySelector('.post-title').value.trim();
         const content = document.querySelector('.post-creator textarea').value.trim();
-        const selectedCategories = Array.from(document.querySelectorAll('.category.selected')).map(el => el.textContent);
+        const selectedCategories = Array.from(document.querySelectorAll('.category.selected'))
+  .map(el => parseInt(el.id));
+
 
         if (!title || !content) {
             alert('Please fill in both the title and content.');

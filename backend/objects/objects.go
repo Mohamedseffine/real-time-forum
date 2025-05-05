@@ -22,7 +22,7 @@ type Post struct {
 	UserId     int      `json:"id"`
 	Content    string   `json:"content"`
 	Title      string   `json:"title"`
-	Categories []string `json:"categories"`
+	Categories []int `json:"categories"`
 	Ncomments  int
 	PostId     int
 	Reacts     []PostReaction
