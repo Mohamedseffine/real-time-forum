@@ -7,11 +7,14 @@
 
 body {
     background: #f5f6fa;
+    overflow-x: hidden;
 }
 
 .app-container {
     display: flex;
-    min-height: 100vh;
+    margin-top: 80px;
+    min-height: calc(100vh - 80px);
+    overflow: hidden;
 }
 
 /* Users Sidebar */
@@ -20,6 +23,7 @@ body {
     background: #ffffff;
     border-right: 1px solid #e0e0e0;
     padding: 20px;
+    overflow-y: auto;
 }
 
 .users-header h2 {
@@ -65,6 +69,14 @@ body {
     margin-bottom: 30px;
 }
 
+.post-creator .post-title {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+}
+
 .post-creator textarea {
     width: 100%;
     height: 100px;
@@ -82,6 +94,11 @@ body {
     padding: 12px 25px;
     border-radius: 6px;
     cursor: pointer;
+    font-weight: 500;
+}
+
+.post-button:hover {
+    background: #2980b9;
 }
 
 /* Posts */
@@ -126,7 +143,8 @@ body {
     border-top: 1px solid #eee;
 }
 
-.like-button, .comment-button {
+.like-button,
+.comment-button {
     background: none;
     border: none;
     color: #7f8c8d;
@@ -136,7 +154,8 @@ body {
     transition: background 0.2s;
 }
 
-.like-button:hover, .comment-button:hover {
+.like-button:hover,
+.comment-button:hover {
     background: #f8f9fa;
 }
 
@@ -177,20 +196,100 @@ body {
     border-radius: 20px;
 }
 
+.comment-input button {
+    padding: 10px 20px;
+    border: none;
+    background: #3498db;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.comment-input button:hover {
+    background: #2980b9;
+}
+
 /* Chat Container */
 .chat-container {
     position: fixed;
-    right: -350px;
     top: 0;
+    right: 0;
     width: 350px;
     height: 100vh;
     background: white;
-    box-shadow: -2px 0 10px rgba(0,0,0,0.05);
-    transition: right 0.3s;
-    display: none;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
 }
 
-/* Add more chat styles as needed */
+.chat-container.active {
+    transform: translateX(0);
+}
+
+.chat-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message.incoming .message-content {
+    background: #ecf0f1;
+    border-radius: 10px;
+    padding: 10px;
+    display: inline-block;
+}
+
+.message.outgoing .message-content {
+    background: #3498db;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    display: inline-block;
+    align-self: flex-end;
+}
+
+.chat-input {
+    padding: 10px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: #2980b9;
+}
+
 /* Auth Buttons */
 .auth-buttons {
     position: fixed;
@@ -201,7 +300,8 @@ body {
     gap: 15px;
 }
 
-.login-btn, .signup-btn {
+.login-btn,
+.signup-btn {
     padding: 10px 25px;
     border: none;
     border-radius: 6px;
@@ -228,11 +328,7 @@ body {
     background: #27ae60;
 }
 
-/* Add margin to main container to prevent overlap */
-.app-container {
-    margin-top: 80px; /* Creates space below fixed auth buttons */
-    min-height: calc(100vh - 80px);
-}
+/* Auth Form */
 .auth-form-container {
     max-width: 400px;
     margin: 120px auto;
@@ -243,7 +339,8 @@ body {
     text-align: center;
 }
 
-.auth-form input {
+.auth-form input,
+.auth-form select {
     display: block;
     width: 100%;
     margin-bottom: 15px;
@@ -252,7 +349,7 @@ body {
     border: 1px solid #ccc;
 }
 
-.auth-form button {
+.auth-form button[type="submit"] {
     background: #3498db;
     color: white;
     padding: 10px 20px;
@@ -261,7 +358,7 @@ body {
     cursor: pointer;
 }
 
-.auth-form button:hover {
+.auth-form button[type="submit"]:hover {
     background: #2980b9;
 }
 
@@ -272,4 +369,26 @@ body {
     border: none;
     cursor: pointer;
     font-size: 14px;
+}
+.categories-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.category-box {
+    background: #ecf0f1;
+    color: #2c3e50;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    user-select: none;
+}
+
+.category-box:hover {
+    background: #3498db;
+    color: white;
 }

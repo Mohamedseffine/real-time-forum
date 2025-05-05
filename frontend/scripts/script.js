@@ -1,16 +1,17 @@
 if (window["WebSocket"]) {
     conn = new WebSocket("ws://" + document.location.host + "/chat")
-    conn.onopen =()=>{
+    conn.onopen = () => {
         console.log("websockets open lol")
     }
-    conn.onmessage =(evt) => {
+    conn.onmessage = (evt) => {
         const data = JSON.parse(evt.data)
-        console.log("received data : ",data)
+        console.log("received data : ", data)
     }
-    conn.onerror =(err)=>{
-        console.log("error websockets" , err);
+    conn.onerror = (err) => {
+        console.log("error websockets", err);
     }
 }
+
 function createBaseLayout() {
     const root = document.getElementById('root');
     root.innerHTML = '';
@@ -46,15 +47,25 @@ function createBaseLayout() {
         </div>
     `;
 
-    // Main content area
+    // Main content area with updated post creator
     const mainContent = document.createElement('div');
     mainContent.className = 'main-content';
     mainContent.innerHTML = `
-        <div class="post-creator">
-            <textarea placeholder="Create a new post..."></textarea>
-            <button class="post-button">Post</button>
-        </div>
-        
+        <div class="categories-bar">
+        <div class="category-box">Sport</div>
+        <div class="category-box">Music</div>
+        <div class="category-box">Movies</div>
+        <div class="category-box">Science</div>
+        <div class="category-box">Politics</div>
+        <div class="category-box">Culture</div>
+        <div class="category-box">Technology</div>
+    </div>
+
+    <div class="post-creator">
+        <input type="text" class="post-title" placeholder="Post title..." required>
+        <textarea placeholder="Write your post content..."></textarea>
+        <button class="post-button">Post</button>
+    </div>
         <div class="posts-feed">
             <!-- Sample Post 1 -->
             <div class="post">
@@ -117,6 +128,7 @@ function createBaseLayout() {
 
 // Initialize the application
 createBaseLayout();
+
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', (e) => {
         if (e.target.classList.contains('login-btn')) {
@@ -128,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 function showAuthForm(type) {
     const root = document.getElementById('root');
     root.innerHTML = ''; 
@@ -174,37 +187,28 @@ function showAuthForm(type) {
     document.querySelector('.back-btn').addEventListener('click', () => {
         window.history.back();
     });
-        // Add back button functionality
-        formContainer.querySelector('.back-btn').addEventListener('click', () => {
-            history.pushState(null, '', '/');
-            createBaseLayout();
-        });
-    
+
+    formContainer.querySelector('.back-btn').addEventListener('click', () => {
+        history.pushState(null, '', '/');
+        createBaseLayout();
+    });
 }
-
-
 
 function formatDateFromTimestamp(ms) {
     const date = new Date(ms);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');
-  
-    return `${year}-${month}-${day}`;
-  }
-  
+    return date.toISOString();
+}
 
 async function sendAuthData(email, username, password, firstname, lastname, gender) {
-    let ok = Date.now();
-    let createdat = formatDateFromTimestamp(ok)
+    const createdat = formatDateFromTimestamp(Date.now());
     const authdata = {
         firstname: firstname,
-        lastname:lastname,
-        gender:gender,
+        lastname: lastname,
+        gender: gender,
         email: email,
         username: username,
         password: password,
-        createdat :createdat
+        createdat: createdat
     };
 
     try {
@@ -217,22 +221,22 @@ async function sendAuthData(email, username, password, firstname, lastname, gend
         });
 
         if (res.ok) {
-            const data = await res.json(); 
-            console.log("Response data:", data);
-            console.log("Auth data sent:", authdata);
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user_id', data.user_id);
+            localStorage.setItem('username', data.username);
             history.pushState(null, '', '/');
             createBaseLayout();
         } else {
-            console.log("Server responded with an error:", res.status);
+            console.log("Server error:", res.status);
         }
     } catch (error) {
-        console.log("Error sending auth data:", error);
+        console.log("Error:", error);
     }
 }
 
 async function sendlogindata(username, password) {
     const type = username.includes('@') ? "email" : "username";
-
     const authData = {
         username: username,
         password: password,
@@ -249,15 +253,18 @@ async function sendlogindata(username, password) {
         });
 
         if (res.ok) {
-            const data = await res.json(); 
-            console.log("Response data:", data);
-            console.log("Auth data sent:", authData);
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user_id', data.user_id);
+            localStorage.setItem('username', data.username);
             history.pushState(null, '', '/');
             createBaseLayout();
         } else {
-            console.error("Server responded with an error:", res.status);
+            console.error("Login failed:", res.status);
         }
     } catch (error) {
-        console.error("Error sending auth data:", error);
+        console.error("Error:", error);
     }
 }
+
+
