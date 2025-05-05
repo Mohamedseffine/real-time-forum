@@ -3,13 +3,14 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"rt_forum/backend/objects"
 	"time"
+
+	"rt_forum/backend/objects"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func InsertUser(db *sql.DB, user objects.LogData) (int64, error) {
+func InsertUser(db *sql.DB, user objects.LogData) (int, error) {
 	stm, err := db.Prepare(`INSERT INTO users(username, first_name, last_name, gender, email, password, creation_date) VALUES (?,?,?,?,?,?,?)`)
 	if err != nil {
 		return -1, err
@@ -24,7 +25,7 @@ func InsertUser(db *sql.DB, user objects.LogData) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	return lastid, nil
+	return int(lastid), nil
 }
 
 func ExtractUser(db *sql.DB, password string, log string, typ string) (int, string) {
@@ -50,4 +51,14 @@ func ExtractUser(db *sql.DB, password string, log string, typ string) (int, stri
 	}
 
 	return int(id), ""
+}
+
+func CreateSession(db *sql.DB, id int, token string, creationTime time.Time, expiration time.Time) error {
+	stm, err := db.Prepare(`INSERT INTO sessions (token, created_at, expires_at, user_id) VALUES (?,?,?,?)`)
+	if err != nil {
+		return err
+	}
+	_, err = stm.Exec(token, creationTime, expiration, id)
+
+	return err
 }

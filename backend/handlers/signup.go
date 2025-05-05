@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"rt_forum/backend/helpers"
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
 
+	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,6 +27,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var userdata objects.LogData
 	err := json.NewDecoder(r.Body).Decode(&userdata)
 	if err != nil {
+		log.Println("1",err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -66,6 +69,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(userdata.Password), 10)
 	if err != nil {
+		log.Println("2",err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -76,6 +80,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	userdata.Password = string(hash)
 	id, err := models.InsertUser(db, userdata)
 	if err != nil {
+		log.Println("3",err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -90,4 +95,25 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	token, err := uuid.NewV4()
+	if err != nil {
+		log.Println(err)
+	}
+	err = models.CreateSession(db, id, token.String(), time.Now(), time.Now().Add(2*time.Hour))
+	if err != nil {
+		log.Println(err)
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name: "token",
+		Value: token.String(),
+		Expires: time.Now().Add(2*time.Hour),
+		HttpOnly: true,
+	})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"id":id,
+		"username":userdata.Username,
+	})
 }
