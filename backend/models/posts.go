@@ -7,11 +7,11 @@ import (
 
 
 func InsertPost(db *sql.DB, postdata objects.Post) (int, error)  {
-	stm , err := db.Prepare(`INSERT INTO posts (creator_id, title, creation_time, content) VALUES (?, ?, ?, ?)`)
+	stm , err := db.Prepare(`INSERT INTO posts (creator_id, title, username, creation_time, content) VALUES (?, ?, ?, ?)`)
 	if err != nil {
 		return -1, err
 	}
-	res, err := stm.Exec(postdata.UserId, postdata.Title, postdata.Time, postdata.Content)
+	res, err := stm.Exec(postdata.UserId, postdata.Title, postdata.Username, postdata.Time, postdata.Content)
 	if err != nil {
 		return -1, err
 	}
