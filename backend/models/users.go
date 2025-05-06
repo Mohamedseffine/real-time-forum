@@ -29,9 +29,9 @@ func InsertUser(db *sql.DB, user objects.LogData) (int, error) {
 }
 
 func ExtractUser(db *sql.DB, password string, log string, typ string) (int, string) {
-	query := `SELECT id, password FROM USERS WHERE username = ?`
+	query := `SELECT id, password FROM users WHERE username = ?`
 	if typ == "email" {
-		query = `SELECT id, password FROM USERS WHERE email = ?`
+		query = `SELECT id, password FROM users WHERE email = ?`
 	}
 	stm, err := db.Prepare(query)
 	if err != nil {
@@ -60,5 +60,24 @@ func CreateSession(db *sql.DB, id int, token string, creationTime time.Time, exp
 	}
 	_, err = stm.Exec(token, creationTime, expiration, id)
 
+	return err
+}
+
+
+func CheckUsername(db *sql.DB, username string) error {
+	stm, err := db.Prepare(`SELECT * FROM users WHERE username = ?`)
+	if err != nil {
+		return err
+	}
+	_, err = stm.Exec(username)
+	return err
+}
+
+func CheckEmail(db *sql.DB, email string) error {
+	stm, err := db.Prepare(`SELECT * FROM users WHERE email = ?`)
+	if err != nil {
+		return err
+	}
+	_, err = stm.Exec(email)
 	return err
 }

@@ -27,4 +27,8 @@ func Multiplexer() {
 	http.HandleFunc("/create_post", func(w http.ResponseWriter, r *http.Request) {
 		handlers.CreatePostHandler(w, r, db)
 	})
+
+	http.HandleFunc("/create_comment", func(w http.ResponseWriter, r *http.Request) {
+		handlers.CreateCommentHandler(w, r, db)
+	})
 }

@@ -11,6 +11,14 @@ import (
 )
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "method not allowed",
+		})
+		return
+	}
 	var post objects.Post
 	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {

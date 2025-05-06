@@ -43,6 +43,13 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	if len(userdata.Password)<8 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "too short password",
+		})
+	}
 	if !helpers.IsValidUesrname(userdata.Username) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -51,6 +58,23 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	err = models.CheckUsername(db, userdata.Username)
+	if err == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error":"username already used",
+		})
+	}
+	err = models.CheckEmail(db, userdata.Email)
+	if err == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error":"email already used",
+		})
+	}
+
 	if !helpers.IsvalidName(userdata.Name) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -67,6 +91,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	
 	hash, err := bcrypt.GenerateFromPassword([]byte(userdata.Password), 10)
 	if err != nil {
 		log.Println("2",err)
@@ -80,7 +105,6 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	userdata.Password = string(hash)
 	id, err := models.InsertUser(db, userdata)
 	if err != nil {
-		log.Println("3",err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -88,14 +112,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	User.Id = int(id)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// err = json.NewEncoder(w).Encode(userdata)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
+	User.Id = id
 	token, err := uuid.NewV4()
 	if err != nil {
 		log.Println(err)

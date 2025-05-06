@@ -18,11 +18,11 @@ type LogData struct {
 }
 
 type Post struct {
-	Username   string   `json:"username"`
-	UserId     int      `json:"id"`
-	Content    string   `json:"content"`
-	Title      string   `json:"title"`
-	Categories []int `json:"categories"`
+	Username   string `json:"username"`
+	UserId     int    `json:"id"`
+	Content    string `json:"content"`
+	Title      string `json:"title"`
+	Categories []int  `json:"categories"`
 	Ncomments  int
 	PostId     int
 	Reacts     []PostReaction
@@ -47,11 +47,11 @@ type CommentReact struct {
 }
 
 type Comment struct {
-	UserId    int
-	PostId    int
-	Username  string
+	UserId    int    `json:"id"`
+	PostId    int    `json:"postid"`
+	Username  string `json:"username"`
+	Content   string `json:"content"`
 	CommentId int
-	Content   string
 	Reacts    []CommentReact
 	Time      time.Time
 }

@@ -3,6 +3,9 @@ package helpers
 import "regexp"
 
 func IsValidUesrname(username string) bool {
+	if len(username)<2{
+		return false
+	}
 	for _, val := range username {
 		if (val < 'a' || val > 'z') && (val < 'A' || val > 'Z') && (val < '0' || val > '9') && val != '_' {
 			return false
@@ -12,6 +15,9 @@ func IsValidUesrname(username string) bool {
 }
 
 func IsvalidName(name string) bool {
+	if len(name)<2 {
+		return false
+	}
 	for _, val := range name {
 		if (val < 'a' || val > 'z') && (val < 'A' || val > 'Z') {
 			return false
@@ -21,6 +27,9 @@ func IsvalidName(name string) bool {
 }
 
 func IsValidEmail(email string) bool {
+	if len(email)<5 {
+		return false
+	}
 	reg, err := regexp.Compile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if err != nil {
 		return false
