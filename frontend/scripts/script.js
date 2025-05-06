@@ -1,4 +1,4 @@
-import { showAuthForm , createBaseLayout} from "./render.js"
+import { showAuthFormSignup , createBaseLayout,showAuthFormLogin} from "./render.js"
 
 if (window["WebSocket"]) {
     var conn 
@@ -18,19 +18,19 @@ if (window["WebSocket"]) {
 
 
 // Initialize the application
-createBaseLayout();
+showAuthFormSignup();
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', (e) => {
-        if (e.target.classList.contains('login-btn')) {
-            history.pushState(null, '', '/login');
-            showAuthForm('login');
-        } else if (e.target.classList.contains('signup-btn')) {
-            history.pushState(null, '', '/signup');
-            showAuthForm('signup');
-        }
-    });
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//     document.body.addEventListener('click', (e) => {
+//         if (e.target.classList.contains('login-btn')) {
+//             history.pushState(null, '', '/login');
+//             showAuthForm('login');
+//         } else if (e.target.classList.contains('signup-btn')) {
+//             history.pushState(null, '', '/signup');
+//             showAuthForm('signup');
+//         }
+//     });
+// });
 
 
 

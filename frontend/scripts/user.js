@@ -22,7 +22,7 @@ export async function sendlogindata(username, password) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user_id', data.user_id);
             localStorage.setItem('username', data.username);
-            history.pushState(null, '', '/');
+            history.pushState(null, '', '/home');
             createBaseLayout();
         } else {
             console.error("Login failed:", res.status);
@@ -61,7 +61,7 @@ export async function sendAuthData(email, username, password, firstname, lastnam
             // localStorage.setItem('token', data.token);
             // localStorage.setItem('user_id', data.user_id);
             // localStorage.setItem('username', data.username);
-            history.pushState(null, '', '/');
+            history.pushState(null, '', '/home');
             createBaseLayout();
         } else {
             console.log("Server error:", res.status);

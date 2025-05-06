@@ -1,17 +1,48 @@
 import { sendAuthData, sendlogindata } from "./user.js";
 
-export function showAuthForm(type) {
+export function showAuthFormLogin() {
     const root = document.getElementById('root');
-    root.innerHTML = ''; 
+    root.innerHTML = '';
 
     const formContainer = document.createElement('div');
     formContainer.className = 'auth-form-container';
 
     formContainer.innerHTML = `
-        <h2>${type === 'login' ? 'Login' : 'Sign Up'}</h2>
+        <h2>Login</h2>
         <form class="auth-form">
             <input type="text" name="username" placeholder="Username" required>
-            ${type === 'signup' ? `
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <button class="signup-btn">Don't have an account? Sign Up</button>
+    `;
+
+    root.appendChild(formContainer);
+
+    document.querySelector('.auth-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        const { username, password } = data;
+        sendlogindata(username, password);
+    });
+
+    formContainer.querySelector('.signup-btn').addEventListener('click', () => {
+        showAuthFormSignup();
+    });
+}
+
+export function showAuthFormSignup() {
+    const root = document.getElementById('root');
+    root.innerHTML = '';
+
+    const formContainer = document.createElement('div');
+    formContainer.className = 'auth-form-container';
+
+    formContainer.innerHTML = `
+        <h2>Sign Up</h2>
+        <form class="auth-form">
+            <input type="text" name="username" placeholder="Username" required>
             <input type="text" name="firstname" placeholder="First Name" required>
             <input type="text" name="lastname" placeholder="Last Name" required>
             <select name="gender" required>
@@ -20,36 +51,23 @@ export function showAuthForm(type) {
                 <option value="female">Female</option>
             </select>
             <input type="email" name="gmail" placeholder="Email" required>
-            ` : ''}
             <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">${type === 'login' ? 'Login' : 'Sign Up'}</button>
+            <button type="submit">Sign Up</button>
         </form>
-        <button class="back-btn">← Back</button>
+        <button class="signin-btn">Already have an account? Sign In</button>
     `;
 
     root.appendChild(formContainer);
-    
+
     document.querySelector('.auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        
-        if (type === 'signup') {
-            const { username, password, firstname, lastname, gender, gmail } = data;
-            sendAuthData(gmail, username, password, firstname, lastname, gender);
-        } if (type === 'login') {
-            const { username, password } = data;
-            sendlogindata(username, password);
-        }
+        const { username, password, firstname, lastname, gender, gmail } = data;
+        sendAuthData(gmail, username, password, firstname, lastname, gender);
     });
-
-    document.querySelector('.back-btn').addEventListener('click', () => {
-        window.history.back();
-    });
-
-    formContainer.querySelector('.back-btn').addEventListener('click', () => {
-        history.pushState(null, '', '/');
-        createBaseLayout();
+    formContainer.querySelector('.signin-btn').addEventListener('click', () => {
+        showAuthFormLogin();
     });
 }
 
