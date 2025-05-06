@@ -14,7 +14,7 @@ export function showAuthFormLogin() {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
-        <button class="signup-btn">Don't have an account? Sign Up</button>
+        <button class="switch-auth-btn">Don't have an account? Sign Up</button>
     `;
 
     root.appendChild(formContainer);
@@ -23,13 +23,10 @@ export function showAuthFormLogin() {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        const { username, password } = data;
-        sendlogindata(username, password);
+        sendlogindata(data.username, data.password);
     });
 
-    formContainer.querySelector('.signup-btn').addEventListener('click', () => {
-        showAuthFormSignup();
-    });
+    formContainer.querySelector('.switch-auth-btn').addEventListener('click', showAuthFormSignup);
 }
 
 export function showAuthFormSignup() {
@@ -50,11 +47,11 @@ export function showAuthFormSignup() {
                 <option value="male">Male</option>
                 <option value="female">Female</option>
             </select>
-            <input type="email" name="gmail" placeholder="Email" required>
+            <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Sign Up</button>
         </form>
-        <button class="signin-btn">Already have an account? Sign In</button>
+        <button class="switch-auth-btn">Already have an account? Sign In</button>
     `;
 
     root.appendChild(formContainer);
@@ -63,25 +60,24 @@ export function showAuthFormSignup() {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        const { username, password, firstname, lastname, gender, gmail } = data;
-        sendAuthData(gmail, username, password, firstname, lastname, gender);
+        sendAuthData(data.email, data.username, data.password, data.firstname, data.lastname, data.gender);
     });
-    formContainer.querySelector('.signin-btn').addEventListener('click', () => {
-        showAuthFormLogin();
-    });
-}
 
+    formContainer.querySelector('.switch-auth-btn').addEventListener('click', showAuthFormLogin);
+}
 
 export function createBaseLayout() {
     const root = document.getElementById('root');
     root.innerHTML = '';
 
-    // Create authentication buttons
-    const authButtons = document.createElement('div');
-    authButtons.className = 'auth-buttons';
-    authButtons.innerHTML = `
-        <button class="login-btn">Login</button>
-        <button class="signup-btn">Sign Up</button>
+    // Navigation bar
+    const navBar = document.createElement('div');
+    navBar.className = 'nav-bar';
+    navBar.innerHTML = `
+        <div class="user-info">
+            <span>Welcome, ${localStorage.getItem('username') || 'User'}</span>
+            <button class="logout-btn">Logout</button>
+        </div>
     `;
 
     // Main app container
@@ -96,94 +92,100 @@ export function createBaseLayout() {
             <h2>Active Users</h2>
         </div>
         <div class="users-list">
-            <div class="user-item" data-user-id="1">
-                <div class="user-avatar"></div>
-                <span class="username">JohnDoe</span>
-            </div>
-            <div class="user-item" data-user-id="2">
-                <div class="user-avatar"></div>
-                <span class="username">JaneSmith</span>
-            </div>
+            <!-- Users will be populated dynamically -->
         </div>
     `;
 
-    // Main content area with updated post creator
+    // Main content area
     const mainContent = document.createElement('div');
     mainContent.className = 'main-content';
     mainContent.innerHTML = `
         <div class="post-creator">
-        <input type="text" class="post-title" placeholder="Post title..." required>
-        <textarea placeholder="Write your post content..."></textarea>
-
+            <input type="text" class="post-title" placeholder="Post title..." required>
+            <textarea placeholder="Write your post content..."></textarea>
             <div class="category-boxes">
-    <span class="category" id="1">Sport</span>
-    <span class="category" id="2">Music</span>
-    <span class="category" id="3">Movies</span>
-    <span class="category" id="4">Science</span>
-    <span class="category" id="5">Politics</span>
-    <span class="category" id="6">Culture</span>
-    <span class="category" id="7">Technology</span>
+                <span class="category" id="1">Sport</span>
+                <span class="category" id="2">Music</span>
+                <span class="category" id="3">Movies</span>
+                <span class="category" id="4">Science</span>
+                <span class="category" id="5">Politics</span>
+                <span class="category" id="6">Culture</span>
+                <span class="category" id="7">Technology</span>
             </div>
-
-
-        <button class="post-button">Post</button>
-    </div>
+            <button class="post-button">Post</button>
+        </div>
         <div class="posts-feed">
-            <!-- Sample Post 1 -->
-            <div class="post">
-                <div class="post-header">
-                    <div class="author-avatar"></div>
-                    <span class="author-name">JohnDoe</span>
-                </div>
-                <div class="post-content">
-                    This is a sample post with some example content
-                </div>
-                <div class="post-actions">
-                    <button class="like-button">👍 24</button>
-                    <button class="comment-button">💬 5</button>
-                </div>
-                <div class="comments-section">
-                    <div class="comment">
-                        <div class="comment-author">JaneSmith</div>
-                        <div class="comment-text">Great post!</div>
-                        <button class="like-button">👍 3</button>
-                    </div>
-                    <div class="comment-input">
-                        <input type="text" placeholder="Write a comment...">
-                        <button>Post</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // Chat container (hidden by default)
-    const chatContainer = document.createElement('div');
-    chatContainer.className = 'chat-container';
-    chatContainer.innerHTML = `
-        <div class="chat-header">
-            <h3>Chat with <span class="chat-partner">Username</span></h3>
-            <button class="close-chat">×</button>
-        </div>
-        <div class="chat-messages">
-            <div class="message incoming">
-                <div class="message-content">Hello!</div>
-            </div>
-            <div class="message outgoing">
-                <div class="message-content">Hi there!</div>
-            </div>
-        </div>
-        <div class="chat-input">
-            <input type="text" placeholder="Type your message...">
-            <button>Send</button>
+            <!-- Posts will be loaded here -->
         </div>
     `;
 
     // Assemble all components
     container.appendChild(sidebar);
     container.appendChild(mainContent);
-    container.appendChild(chatContainer);
-    
-    root.appendChild(authButtons);
+    root.appendChild(navBar);
     root.appendChild(container);
+
+    // Add event listeners
+    setupPostCreation();
+    setupLogoutButton();
+}
+
+function setupPostCreation() {
+    document.querySelector('.post-button')?.addEventListener('click', async () => {
+        const title = document.querySelector('.post-title').value.trim();
+        const content = document.querySelector('.post-creator textarea').value.trim();
+        const selectedCategories = Array.from(document.querySelectorAll('.category.selected'))
+            .map(el => parseInt(el.id));
+
+        if (!title || !content) {
+            alert('Please fill in both the title and content.');
+            return;
+        }
+
+        const payload = {
+            username: localStorage.getItem('username'),
+            user_id: localStorage.getItem('user_id'),
+            title: title,
+            content: content,
+            categories: selectedCategories
+        };
+
+        try {
+            const res = await fetch('/create_post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to create post');
+            }
+
+            alert('Post created successfully!');
+            document.querySelector('.post-title').value = '';
+            document.querySelector('.post-creator textarea').value = '';
+            document.querySelectorAll('.category.selected').forEach(el => el.classList.remove('selected'));
+        } catch (err) {
+            alert(`Error: ${err.message}`);
+        }
+    });
+
+    // Category selection
+    document.querySelectorAll('.category').forEach(cat => {
+        cat.addEventListener('click', () => {
+            cat.classList.toggle('selected');
+        });
+    });
+}
+
+function setupLogoutButton() {
+    document.querySelector('.logout-btn')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        showAuthFormLogin();
+    });
 }

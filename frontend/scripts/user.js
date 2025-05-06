@@ -1,11 +1,10 @@
-import {createBaseLayout} from "./render.js"
-import { formatDateFromTimestamp } from "./script.js";
+import { createBaseLayout, showAuthFormLogin } from "./render.js";
+
 export async function sendlogindata(username, password) {
     const type = username.includes('@') ? "email" : "username";
     const authData = {
-        username: username,
-        password: password,
-        type: type
+        [type]: username,
+        password: password
     };
 
     try {
@@ -17,32 +16,30 @@ export async function sendlogindata(username, password) {
             body: JSON.stringify(authData)
         });
 
+        const data = await res.json();
+
         if (res.ok) {
-            const data = await res.json();
             localStorage.setItem('token', data.token);
             localStorage.setItem('user_id', data.user_id);
             localStorage.setItem('username', data.username);
-            history.pushState(null, '', '/home');
             createBaseLayout();
         } else {
-            console.error("Login failed:", res.status);
+            throw new Error(data.message || "Login failed");
         }
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Login error:", error);
+        alert(error.message);
     }
 }
 
-
 export async function sendAuthData(email, username, password, firstname, lastname, gender) {
-    const createdat = formatDateFromTimestamp(Date.now());
     const authdata = {
         firstname: firstname,
         lastname: lastname,
         gender: gender,
         email: email,
         username: username,
-        password: password,
-        createdat: createdat
+        password: password
     };
 
     try {
@@ -54,19 +51,18 @@ export async function sendAuthData(email, username, password, firstname, lastnam
             body: JSON.stringify(authdata)
         });
 
+        const data = await res.json();
+
         if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-            
-            // localStorage.setItem('token', data.token);
-            // localStorage.setItem('user_id', data.user_id);
-            // localStorage.setItem('username', data.username);
-            history.pushState(null, '', '/home');
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user_id', data.user_id);
+            localStorage.setItem('username', data.username);
             createBaseLayout();
         } else {
-            console.log("Server error:", res.status);
+            throw new Error(data.message || "Signup failed");
         }
     } catch (error) {
-        console.log("Error:", error);
+        console.error("Signup error:", error);
+        alert(error.message);
     }
 }
