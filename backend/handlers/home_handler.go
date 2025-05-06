@@ -2,18 +2,28 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"html/template"
-	"log"
 	"net/http"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB)  {
+func HandleRegister(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method != http.MethodGet {
-		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "method not allowed",
+		})
+		return
 	}
-	tmp, err:=template.ParseFiles("./frontend/index.html")
+	tmp, err := template.ParseFiles("./frontend/index.html")
 	if err != nil {
-		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "can't serve page",
+		})
+		return
 	}
 	tmp.Execute(w, nil)
 }

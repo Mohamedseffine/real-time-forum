@@ -13,7 +13,7 @@ func Multiplexer() {
 		handlers.HandleWS(w, r, db)
 	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		handlers.HomeHandler(w, r, db)
+		handlers.HandleRegister(w, r, db)
 	})
 	http.HandleFunc("/frontend/", handlers.HandleStatic)
 	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
@@ -30,5 +30,9 @@ func Multiplexer() {
 
 	http.HandleFunc("/create_comment", func(w http.ResponseWriter, r *http.Request) {
 		handlers.CreateCommentHandler(w, r, db)
+	})
+
+	http.HandleFunc("/retrieve_posts", func(w http.ResponseWriter, r *http.Request) {
+		handlers.RetrievePosts(w, r, db)
 	})
 }
