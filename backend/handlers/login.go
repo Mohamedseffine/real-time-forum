@@ -43,6 +43,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": erro,
 		})
+		return
 	}
 	fmt.Println(id)
 	token, err := uuid.NewV4()
@@ -58,6 +59,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": string(err.Error()),
 		})
+		return
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name: "token",

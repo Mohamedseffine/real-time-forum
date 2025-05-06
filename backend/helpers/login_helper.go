@@ -1,6 +1,11 @@
 package helpers
 
-import "regexp"
+import (
+	"database/sql"
+	"net/http"
+	"regexp"
+	"rt_forum/backend/models"
+)
 
 func IsValidUesrname(username string) bool {
 	if len(username)<2{
@@ -35,4 +40,17 @@ func IsValidEmail(email string) bool {
 		return false
 	}
 	return reg.Match([]byte(email))
+}
+
+
+func IsLoggedIn(db *sql.DB, r *http.Request) (bool) {
+	token, err := r.Cookie("token")
+	if err != nil {
+		return false
+	}
+	n :=models.CheckSession(db, token.String())
+	if n == 1 {
+		return true
+	}
+	return false
 }

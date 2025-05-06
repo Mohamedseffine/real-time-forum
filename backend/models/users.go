@@ -92,3 +92,17 @@ func CheckEmail(db *sql.DB, email string) int {
 	}
 	return int(n)
 }
+
+
+func CheckSession(db *sql.DB,token string) (int) {
+	var n int
+	stm, err := db.Prepare(`SELECT COUNT(*) FROM sessions`)
+	if err != nil {
+		return -1
+	}
+	err = stm.QueryRow(token).Scan(&n)
+	if err != nil {
+		return -1
+	}
+	return n
+}
