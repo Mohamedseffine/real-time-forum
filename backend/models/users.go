@@ -32,6 +32,8 @@ func ExtractUser(db *sql.DB, password string, log string, typ string) (int, stri
 	query := `SELECT id, password FROM users WHERE username = ?`
 	if typ == "email" {
 		query = `SELECT id, password FROM users WHERE email = ?`
+	}else if typ!="username"{
+		return -1, "invalid login type"
 	}
 	stm, err := db.Prepare(query)
 	if err != nil {
@@ -64,20 +66,29 @@ func CreateSession(db *sql.DB, id int, token string, creationTime time.Time, exp
 }
 
 
-func CheckUsername(db *sql.DB, username string) error {
-	stm, err := db.Prepare(`SELECT * FROM users WHERE username = ?`)
+func CheckUsername(db *sql.DB, username string) int {
+	stm, err := db.Prepare(`SELECT COUNT(*) FROM users WHERE username = ?`)
 	if err != nil {
-		return err
+		return -1
 	}
-	_, err = stm.Exec(username)
-	return err
+	var n int
+	err = stm.QueryRow(username).Scan(&n)
+	if err != nil {
+		return -1
+	}
+	
+	return int(n)
 }
 
-func CheckEmail(db *sql.DB, email string) error {
-	stm, err := db.Prepare(`SELECT * FROM users WHERE email = ?`)
+func CheckEmail(db *sql.DB, email string) int {
+	stm, err := db.Prepare(`SELECT COUNT(*) FROM users WHERE email = ?`)
 	if err != nil {
-		return err
+		return -1
 	}
-	_, err = stm.Exec(email)
-	return err
+	var n int
+	err = stm.QueryRow(email).Scan(&n)
+	if err != nil {
+		return -1
+	}
+	return int(n)
 }

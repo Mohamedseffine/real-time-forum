@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -27,7 +28,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var userdata objects.LogData
 	err := json.NewDecoder(r.Body).Decode(&userdata)
 	if err != nil {
-		log.Println("1",err)
+		log.Println("1", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -36,6 +37,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	if !helpers.IsValidEmail(userdata.Email) {
+		fmt.Println("1", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -43,14 +45,17 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	if len(userdata.Password)<8 {
+	if len(userdata.Password) < 8 {
+		fmt.Println("2", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "too short password",
 		})
+		return
 	}
 	if !helpers.IsValidUesrname(userdata.Username) {
+		fmt.Println("3", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -58,24 +63,31 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	err = models.CheckUsername(db, userdata.Username)
-	if err == nil {
+	n := models.CheckUsername(db, userdata.Username)
+	if n != 0 {
+		log.Println(n)
+		fmt.Println("4", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
-			"error":"username already used",
+			"error": "username already used",
 		})
+		return
 	}
-	err = models.CheckEmail(db, userdata.Email)
-	if err == nil {
+	m := models.CheckEmail(db, userdata.Email)
+	if m != 0 {
+		log.Println(m)
+		fmt.Println("5", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
-			"error":"email already used",
+			"error": "email already used",
 		})
+		return
 	}
 
 	if !helpers.IsvalidName(userdata.Name) {
+		fmt.Println("6", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -84,6 +96,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	if !helpers.IsvalidName(userdata.FamilyName) {
+		fmt.Println("7", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -91,10 +104,10 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(userdata.Password), 10)
 	if err != nil {
-		log.Println("2",err)
+		log.Println("2", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -105,6 +118,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	userdata.Password = string(hash)
 	id, err := models.InsertUser(db, userdata)
 	if err != nil {
+		log.Println("3", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -115,22 +129,34 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	User.Id = id
 	token, err := uuid.NewV4()
 	if err != nil {
-		log.Println(err)
+		log.Println("4", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "can't insert data",
+		})
+		return
 	}
 	err = models.CreateSession(db, id, token.String(), time.Now(), time.Now().Add(2*time.Hour))
 	if err != nil {
-		log.Println(err)
+		log.Println("5", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": "can't insert data",
+		})
+		return
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Value: token.String(),
-		Expires: time.Now().Add(2*time.Hour),
+		Name:     "token",
+		Value:    token.String(),
+		Expires:  time.Now().Add(2 * time.Hour),
 		HttpOnly: true,
 	})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"id":id,
-		"username":userdata.Username,
+		"id":       id,
+		"username": userdata.Username,
 	})
 }
