@@ -68,3 +68,12 @@ export async function sendAuthData(email, username, password, firstname, lastnam
         alert(error.message);
     }
 }
+
+export function setupLogoutButton() {
+    document.querySelector('.logout-btn')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        showAuthFormLogin();
+    });
+}

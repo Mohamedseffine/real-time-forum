@@ -1,4 +1,4 @@
-import { sendAuthData, sendlogindata } from "./user.js";
+import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
 
 export function showAuthFormLogin() {
     const root = document.getElementById('root');
@@ -181,11 +181,4 @@ function setupPostCreation() {
     });
 }
 
-function setupLogoutButton() {
-    document.querySelector('.logout-btn')?.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user_id');
-        localStorage.removeItem('username');
-        showAuthFormLogin();
-    });
-}
+    setupLogoutButton()
