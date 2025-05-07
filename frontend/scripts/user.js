@@ -53,12 +53,19 @@ export async function sendAuthData(email, username, password, firstname, lastnam
             body: JSON.stringify(authdata)
         });
 
-        const data = await res.json();
-
+        const data = await res.json(); 
         if (res.ok) {
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user_id', data.user_id);
+            localStorage.setItem('id', data.id);
             localStorage.setItem('username', data.username);
+            console.log(data.username);
+            console.log(data.token);
+            
+            // console.log(localStorage.getItem('token'));
+            // console.log(localStorage.getItem('user_id'));
+            // console.log(localStorage.getItem('username'));
+
+            
             createBaseLayout();
         } else {
             throw new Error(data.message || "Signup failed");

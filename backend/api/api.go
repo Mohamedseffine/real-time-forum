@@ -36,4 +36,8 @@ func Multiplexer() {
 	http.HandleFunc("/retrieve_posts", func(w http.ResponseWriter, r *http.Request) {
 		handlers.RetrievePosts(w, r, db)
 	})
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		handlers.LogoutHandler(w, r, db)
+	})
+
 }
