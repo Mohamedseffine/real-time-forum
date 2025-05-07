@@ -180,5 +180,4 @@ function setupPostCreation() {
         });
     });
 }
-
-    setupLogoutButton()
+await setupLogoutButton()
