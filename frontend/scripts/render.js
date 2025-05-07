@@ -144,12 +144,14 @@ function setupPostCreation() {
 
         const payload = {
             username: localStorage.getItem('username'),
-            user_id: localStorage.getItem('user_id'),
+            id: localStorage.getItem('id'),
             title: title,
             content: content,
             categories: selectedCategories
+
         };
 
+        payload.id = parseInt(payload.id)
         try {
             const res = await fetch('/create_post', {
                 method: 'POST',
@@ -159,7 +161,8 @@ function setupPostCreation() {
                 },
                 body: JSON.stringify(payload)
             });
-
+            console.log(JSON.stringify(payload));
+            
             if (!res.ok) {
                 throw new Error('Failed to create post');
             }
