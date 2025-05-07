@@ -73,7 +73,6 @@ export async function setupLogoutButton() {
             username : localStorage.getItem('username'),
             id : localStorage.getItem('id')
     }
-    console.log(logoutdata);
     logoutdata.id = parseInt(logoutdata.id)
     document.querySelector('.logout-btn')?.addEventListener('click', async() => {
         try{
