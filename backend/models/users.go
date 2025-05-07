@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"rt_forum/backend/objects"
@@ -95,14 +96,16 @@ func CheckEmail(db *sql.DB, email string) int {
 
 
 func CheckSession(db *sql.DB,token string) (int) {
-	var n int
-	stm, err := db.Prepare(`SELECT COUNT(*) FROM sessions`)
+	var n int64
+	stm, err := db.Prepare(`SELECT COUNT(*) FROM sessions WHERE token = ?`)
 	if err != nil {
+		log.Println("1",err)
 		return -1
 	}
 	err = stm.QueryRow(token).Scan(&n)
 	if err != nil {
+		log.Println("1",err)
 		return -1
 	}
-	return n
+	return int(n)
 }

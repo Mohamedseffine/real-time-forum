@@ -2,13 +2,16 @@ package helpers
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"regexp"
+	"strings"
+
 	"rt_forum/backend/models"
 )
 
 func IsValidUesrname(username string) bool {
-	if len(username)<2{
+	if len(username) < 2 {
 		return false
 	}
 	for _, val := range username {
@@ -20,7 +23,7 @@ func IsValidUesrname(username string) bool {
 }
 
 func IsvalidName(name string) bool {
-	if len(name)<2 {
+	if len(name) < 2 {
 		return false
 	}
 	for _, val := range name {
@@ -32,7 +35,7 @@ func IsvalidName(name string) bool {
 }
 
 func IsValidEmail(email string) bool {
-	if len(email)<5 {
+	if len(email) < 5 {
 		return false
 	}
 	reg, err := regexp.Compile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
@@ -42,13 +45,13 @@ func IsValidEmail(email string) bool {
 	return reg.Match([]byte(email))
 }
 
-
-func IsLoggedIn(db *sql.DB, r *http.Request) (bool) {
+func IsLoggedIn(db *sql.DB, r *http.Request) bool {
 	token, err := r.Cookie("token")
 	if err != nil {
 		return false
 	}
-	n :=models.CheckSession(db, token.String())
+	n := models.CheckSession(db, strings.TrimPrefix(token.String(), "token="))
+	log.Println(n)
 	if n == 1 {
 		return true
 	}
