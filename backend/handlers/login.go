@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -48,12 +47,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	fmt.Println(id)
 	token, err := uuid.NewV4()
 	if err != nil {
-		fmt.Println("1",err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "internal server error",
+		})
+		return
 	}
-	err  = models.CreateSession(db, id, token.String(), time.Now(), time.Now().Add(2*time.Hour))
+	err = models.CreateSession(db, id, token.String(), time.Now(), time.Now().Add(2*time.Hour))
 	if err != nil {
-		fmt.Println("2",err)
-		fmt.Println(erro)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -62,20 +64,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Value:token.String(),
-		Expires: time.Now().Add(2*time.Hour),
+		Name:     "token",
+		Value:    token.String(),
+		Expires:  time.Now().Add(2 * time.Hour),
 		HttpOnly: true,
 	})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(map[string]interface{}{
-		"id":id,
-		"username":userdata.Username,
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"id":       id,
+		"username": userdata.Username,
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
 }
-
-

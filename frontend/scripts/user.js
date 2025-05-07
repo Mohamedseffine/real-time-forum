@@ -2,8 +2,10 @@ import { createBaseLayout, showAuthFormLogin } from "./render.js";
 
 export async function sendlogindata(username, password) {
     const type = username.includes('@') ? "email" : "username";
+    console.log(type)
     const authData = {
-        [type]: username,
+        username:username,
+        type: type,
         password: password
     };
 

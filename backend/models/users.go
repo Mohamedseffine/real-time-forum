@@ -109,3 +109,17 @@ func CheckSession(db *sql.DB,token string) (int) {
 	}
 	return int(n)
 }
+
+
+func LogoutCheck(db *sql.DB, session string) (int) {
+	stm, err := db.Prepare(`SELECT user_id FROM sessions WHERE token = ?`)
+	if err != nil {
+		return -1
+	}
+	var id int
+	err =stm.QueryRow(session).Scan(&id)
+	if err != nil {
+		return -1
+	}
+	return id
+}
