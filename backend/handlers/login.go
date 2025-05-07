@@ -74,5 +74,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":       id,
 		"username": userdata.Username,
+		"token":token.String(),
 	})
 }
