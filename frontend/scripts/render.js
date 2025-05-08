@@ -128,6 +128,7 @@ export function createBaseLayout() {
     // Add event listeners
     setupPostCreation();
     setupLogoutButton();
+    loadPosts();
 }
 
 function setupPostCreation() {
@@ -144,14 +145,12 @@ function setupPostCreation() {
 
         const payload = {
             username: localStorage.getItem('username'),
-            id: localStorage.getItem('id'),
-            title: title,
-            content: content,
+            id: parseInt(localStorage.getItem('id')),
+            title,
+            content,
             categories: selectedCategories
-
         };
 
-        payload.id = parseInt(payload.id)
         try {
             const res = await fetch('/create_post', {
                 method: 'POST',
@@ -161,8 +160,7 @@ function setupPostCreation() {
                 },
                 body: JSON.stringify(payload)
             });
-            console.log(JSON.stringify(payload));
-            
+
             if (!res.ok) {
                 throw new Error('Failed to create post');
             }
@@ -171,6 +169,8 @@ function setupPostCreation() {
             document.querySelector('.post-title').value = '';
             document.querySelector('.post-creator textarea').value = '';
             document.querySelectorAll('.category.selected').forEach(el => el.classList.remove('selected'));
+
+            loadPosts(); // Update posts feed without page reload
         } catch (err) {
             alert(`Error: ${err.message}`);
         }
@@ -183,4 +183,62 @@ function setupPostCreation() {
         });
     });
 }
-await setupLogoutButton()
+
+export async function loadPosts() {
+    try {
+        const res = await fetch('/retrieve_posts');
+        const posts = await res.json();
+
+        const feed = document.querySelector('.posts-feed');
+        feed.innerHTML = ''; // Clear previous posts
+
+        posts.forEach(post => {
+            const postEl = document.createElement('div');
+            postEl.className = 'post-item';
+
+            postEl.innerHTML = `
+                <h3 class="post-title">${post.title}</h3>
+                <p class="post-content">${post.content}</p>
+                <div class="post-meta">
+                    <span>By <strong>${post.username}</strong></span> |
+                    <span>${new Date(post.creation_time).toLocaleString()}</span>
+                </div>
+
+                <div class="comments-section">
+                    <h4>Comments</h4>
+                    <div class="comments-list">
+                        <!-- Comments can be dynamically loaded here -->
+                        <p class="no-comments">No comments yet.</p>
+                    </div>
+                    <form class="comment-form">
+                        <input type="text" class="comment-input" placeholder="Write a comment..." required />
+                        <button type="submit" class="comment-btn">Post</button>
+                    </form>
+                </div>
+            `;
+
+            // Handle comment submission (in-memory for now)
+            const form = postEl.querySelector('.comment-form');
+            const commentsList = postEl.querySelector('.comments-list');
+            const noComments = postEl.querySelector('.no-comments');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const input = form.querySelector('.comment-input');
+                const commentText = input.value.trim();
+                if (commentText) {
+                    const commentEl = document.createElement('p');
+                    commentEl.className = 'comment-item';
+                    commentEl.textContent = commentText;
+                    commentsList.appendChild(commentEl);
+                    input.value = '';
+                    noComments?.remove();
+                }
+            });
+
+            feed.appendChild(postEl);
+        });
+    } catch (err) {
+        console.error('Error loading posts:', err);
+    }
+}

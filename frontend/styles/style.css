@@ -412,3 +412,74 @@ body {
     background-color: #007bff;
     color: white;
 }
+.post-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.post-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.post-content {
+    margin-bottom: 0.5rem;
+}
+
+.post-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.comments-section {
+    border-top: 1px solid #eee;
+    padding-top: 0.8rem;
+    margin-top: 1rem;
+}
+
+.comments-section h4 {
+    margin: 0 0 0.5rem;
+}
+
+.comments-list {
+    margin-bottom: 0.5rem;
+}
+
+.comment-item {
+    background: #f9f9f9;
+    padding: 0.4rem;
+    border-radius: 5px;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+}
+
+.comment-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 0.4rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.comment-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.comment-btn:hover {
+    background-color: #2980b9;
+}
