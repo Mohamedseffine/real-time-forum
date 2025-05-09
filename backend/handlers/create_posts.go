@@ -39,6 +39,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	post.ID=id
 	for _, value := range post.Categories {
 		models.InsertCategories(db, id, value)
 	}

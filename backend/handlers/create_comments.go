@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
 )
 
@@ -26,5 +27,17 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB)  {
 		})
 		return 
 	}
-	
+	id, err := models.InsertComments(db, comment.UserId,comment.PostId,comment.Content)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error":"can't insert data",
+		})
+		return
+	}
+	comment.CommentId=id
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(comment)
 }

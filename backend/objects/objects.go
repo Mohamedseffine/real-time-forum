@@ -48,13 +48,13 @@ type CommentReact struct {
 }
 
 type Comment struct {
-	UserId    int    `json:"id"`
-	PostId    int    `json:"postid"`
-	Username  string `json:"username"`
-	Content   string `json:"content"`
-	CommentId int
+	UserId    int       `json:"user_id"`
+	PostId    int       `json:"postid"`
+	Username  string    `json:"username"`
+	Content   string    `json:"content"`
+	CommentId int       `json:"id"`
+	Time      time.Time `json:"creation_time"`
 	Reacts    []CommentReact
-	Time      time.Time
 }
 
 type User struct {
