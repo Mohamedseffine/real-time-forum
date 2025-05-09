@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"html"
 	"log"
 	"time"
 
@@ -18,7 +19,7 @@ func InsertUser(db *sql.DB, user objects.LogData) (int, error) {
 	}
 	defer stm.Close()
 
-	res, err := stm.Exec(user.Username, user.Name, user.FamilyName, user.Gender, user.Email, user.Password, time.Now())
+	res, err := stm.Exec(user.Username, html.EscapeString(user.Name), html.EscapeString(user.FamilyName), user.Gender, html.EscapeString(user.Email), user.Password, time.Now())
 	if err != nil {
 		return -1, err
 	}

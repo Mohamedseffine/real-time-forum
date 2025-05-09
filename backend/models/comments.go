@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"html"
 	"time"
 )
 
@@ -11,7 +12,7 @@ func InsertComments(db *sql.DB, userid int, postid int, content string) error {
 	if err != nil {
 		return err
 	}	
-	_, err = stm.Exec(userid, postid, time.Now(), content)
+	_, err = stm.Exec(userid, postid, time.Now(), html.EscapeString(content))
 	if err != nil {
 		return err
 	}

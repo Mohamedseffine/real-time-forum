@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"html"
 	"time"
 
 	"rt_forum/backend/objects"
@@ -12,7 +13,7 @@ func InsertPost(db *sql.DB, postdata objects.Post) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	res, err := stm.Exec(postdata.UserId, postdata.Title, postdata.Username, time.Now(), postdata.Content)
+	res, err := stm.Exec(postdata.UserId, html.EscapeString(postdata.Title), postdata.Username, time.Now(), html.EscapeString(postdata.Content))
 	if err != nil {
 		return -1, err
 	}
