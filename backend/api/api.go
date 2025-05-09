@@ -39,5 +39,7 @@ func Multiplexer() {
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		handlers.LogoutHandler(w, r, db)
 	})
-
+	http.HandleFunc("/retrieve_comments", func(w http.ResponseWriter, r *http.Request) {
+		handlers.RetrieveComments(w, r, db)
+	})
 }
