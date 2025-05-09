@@ -1,4 +1,4 @@
-import { sendAuthData, sendlogindata, setupLogoutButton,setupComment } from "./user.js";
+import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
 
 export function showAuthFormLogin() {
     const root = document.getElementById('root');
@@ -70,7 +70,6 @@ export function createBaseLayout() {
     const root = document.getElementById('root');
     root.innerHTML = '';
 
-    // Navigation bar
     const navBar = document.createElement('div');
     navBar.className = 'nav-bar';
     navBar.innerHTML = `
@@ -80,23 +79,18 @@ export function createBaseLayout() {
         </div>
     `;
 
-    // Main app container
     const container = document.createElement('div');
     container.className = 'app-container';
 
-    // Users sidebar
     const sidebar = document.createElement('div');
     sidebar.className = 'users-sidebar';
     sidebar.innerHTML = `
         <div class="users-header">
             <h2>Active Users</h2>
         </div>
-        <div class="users-list">
-            <!-- Users will be populated dynamically -->
-        </div>
+        <div class="users-list"></div>
     `;
 
-    // Main content area
     const mainContent = document.createElement('div');
     mainContent.className = 'main-content';
     mainContent.innerHTML = `
@@ -114,18 +108,14 @@ export function createBaseLayout() {
             </div>
             <button class="post-button">Post</button>
         </div>
-        <div class="posts-feed">
-            <!-- Posts will be loaded here -->
-        </div>
+        <div class="posts-feed"></div>
     `;
 
-    // Assemble all components
     container.appendChild(sidebar);
     container.appendChild(mainContent);
     root.appendChild(navBar);
     root.appendChild(container);
 
-    // Add event listeners
     setupPostCreation();
     setupLogoutButton();
     loadPosts();
@@ -161,22 +151,18 @@ function setupPostCreation() {
                 body: JSON.stringify(payload)
             });
 
-            if (!res.ok) {
-                throw new Error('Failed to create post');
-            }
+            if (!res.ok) throw new Error('Failed to create post');
 
             alert('Post created successfully!');
             document.querySelector('.post-title').value = '';
             document.querySelector('.post-creator textarea').value = '';
             document.querySelectorAll('.category.selected').forEach(el => el.classList.remove('selected'));
-
-            loadPosts(); // Update posts feed without page reload
+            loadPosts();
         } catch (err) {
             alert(`Error: ${err.message}`);
         }
     });
 
-    // Category selection
     document.querySelectorAll('.category').forEach(cat => {
         cat.addEventListener('click', () => {
             cat.classList.toggle('selected');
@@ -203,28 +189,81 @@ export async function loadPosts() {
                     <span>By <strong>${post.username}</strong></span> |
                     <span>${new Date(post.creation_time).toLocaleString()}</span>
                 </div>
-
-                <div class="comments-section">
+                <div class="comments-section" data-post-id="${post.id}">
                     <h4>Comments</h4>
-                    <div class="comments-list">
-                        <p class="no-comments">No comments yet.</p>
+                    <div class="comments-list" id="comments-list-${post.id}">
+                        <p class="no-comments" id="no-comments-${post.id}">No comments yet.</p>
                     </div>
-                    <form class="comment-form">
+                    <form class="comment-form" data-post-id="${post.id}">
                         <input type="text" class="comment-input" placeholder="Write a comment..." required />
                         <button type="submit" class="comment-btn">Post</button>
                     </form>
                 </div>
             `;
 
-            const commentsList = postEl.querySelector('.comments-list');
-            const noComments = postEl.querySelector('.no-comments');
-
-            // Removed automatic comment display after submission
-            setupComment(post.id, commentsList, noComments);
-
             feed.appendChild(postEl);
+            setupComment(post.id);
         }
     } catch (err) {
         console.error('Error loading posts:', err);
     }
+}
+
+function setupComment(postId) {
+    const form = document.querySelector(`.comment-form[data-post-id="${postId}"]`);
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    const noComments = document.getElementById(`no-comments-${postId}`);
+
+    retrieve_comments(postId, commentsList, noComments);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = form.querySelector('.comment-input');
+        const commentText = input.value.trim();
+
+        if (!commentText) return;
+
+        try {
+            const res = await fetch('/create_comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    post_id: postId,
+                    user_id: parseInt(localStorage.getItem('id')),
+                    content: commentText
+                })
+            });
+
+            if (!res.ok) throw new Error('Failed to post comment');
+
+            input.value = '';
+            retrieve_comments(postId, commentsList, noComments);
+        } catch (err) {
+            alert('Error posting comment: ' + err.message);
+        }
+    });
+}
+
+function retrieve_comments(postId, commentsList, noComments) {
+    fetch(`/retrieve_comments?postid=${postId}`)
+        .then(res => res.json())
+        .then(comments => {
+            commentsList.innerHTML = '';
+            if (comments.length === 0) {
+                noComments.style.display = 'block';
+            } else {
+                noComments.style.display = 'none';
+                comments.forEach(comment => {
+                    const el = document.createElement('p');
+                    el.textContent = `${comment.username}: ${comment.content}`;
+                    commentsList.appendChild(el);
+                });
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching comments:', err);
+        });
 }

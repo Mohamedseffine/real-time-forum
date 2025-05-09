@@ -25,11 +25,15 @@ func InsertComments(db *sql.DB, userid int, postid int, content string) (int, er
 }
 
 func GetComments(db *sql.DB, postid int) ([]objects.Comment, error) {
-	rows, err := db.Query(`SELECT * FROM comments WHERE post_id = ?`, postid)
+	rows, err := db.Query(`
+		SELECT id, creator_id, post_id, creation_date, content 
+		FROM comments 
+		WHERE post_id = ?`, postid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
 	var comments []objects.Comment
 	for rows.Next() {
 		var comment objects.Comment
