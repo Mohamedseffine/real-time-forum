@@ -18,16 +18,17 @@ type LogData struct {
 }
 
 type Post struct {
-	Username   string `json:"username"`
-	UserId     int    `json:"id"`
-	Content    string `json:"content"`
-	Title      string `json:"title"`
-	Categories []int  `json:"categories"`
-	Ncomments  int
-	PostId     int
-	Reacts     []PostReaction
-	Comments   []Comment
-	Time       time.Time
+	ID           int    `json:"id"`
+	UserId       int    `json:"creator_id"`
+	Username     string `json:"username"`
+	Title        string `json:"title"`
+	Content      string `json:"content"`
+	CreationTime string `json:"creation_time"`
+	Categories   []int  `json:"categories"`
+	Categorie    string `json:"categorie"`
+	Ncomments    int
+	Reacts       []PostReaction
+	Comments     []Comment
 }
 
 type PostReaction struct {

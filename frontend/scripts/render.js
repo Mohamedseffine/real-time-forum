@@ -145,7 +145,7 @@ function setupPostCreation() {
 
         const payload = {
             username: localStorage.getItem('username'),
-            id: parseInt(localStorage.getItem('id')),
+            creator_id: parseInt(localStorage.getItem('id')),
             title,
             content,
             categories: selectedCategories
@@ -185,6 +185,7 @@ function setupPostCreation() {
 }
 
 export async function loadPosts() {
+    
     try {
         const res = await fetch('/retrieve_posts');
         const posts = await res.json();
@@ -193,11 +194,13 @@ export async function loadPosts() {
         feed.innerHTML = ''; // Clear previous posts
 
         posts.forEach(post => {
+            console.log(post.categorie);
+            
             const postEl = document.createElement('div');
             postEl.className = 'post-item';
-
             postEl.innerHTML = `
                 <h3 class="post-title">${post.title}</h3>
+                <h5 class="post-title">${post.categorie}</h3>
                 <p class="post-content">${post.content}</p>
                 <div class="post-meta">
                     <span>By <strong>${post.username}</strong></span> |

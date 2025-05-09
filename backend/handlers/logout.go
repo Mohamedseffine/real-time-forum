@@ -3,14 +3,16 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
+
 	"rt_forum/backend/models"
 )
 
 type logout struct {
-	Id    int    `json:"id"`
+	Id       int    `json:"id"`
 	Username string `json:"username"`
-	Token string `json:"token"`
+	Token    string `json:"token"`
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -32,7 +34,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	log.Println(data)
 	id := models.LogoutCheck(db, data.Token)
+
 	if id != data.Id {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -42,9 +46,17 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Value: "",
+		Name:   "token",
+		Value:  "",
 		MaxAge: -1,
-
 	})
+	err = models.DeleteSession(db, data.Token)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error":"server error",
+		})
+		return
+	}
 }

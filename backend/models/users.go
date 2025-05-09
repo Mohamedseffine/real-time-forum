@@ -123,3 +123,13 @@ func LogoutCheck(db *sql.DB, session string) (int) {
 	}
 	return id
 }
+
+
+func DeleteSession(db *sql.DB, session string)(error) {
+	stm, err := db.Prepare(`DELETE * FROM sessions WHERE session = ?`)
+	if err != nil {
+		return err
+	}
+	_, err = stm.Exec(session)
+	return err
+}
