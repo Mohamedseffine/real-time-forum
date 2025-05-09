@@ -1,4 +1,4 @@
-import { showAuthFormSignup, createBaseLayout, showAuthFormLogin } from "./render.js";
+import { showAuthFormSignup, createBaseLayout } from "./render.js";
 
 // Initialize WebSocket connection
 export function initializeWebSocket() {
