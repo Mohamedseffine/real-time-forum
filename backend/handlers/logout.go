@@ -52,6 +52,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	})
 	err = models.DeleteSession(db, data.Token)
 	if err != nil {
+		log.Println(err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{

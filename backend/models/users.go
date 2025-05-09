@@ -34,7 +34,7 @@ func ExtractUser(db *sql.DB, password string, log string, typ string) (int, stri
 	query := `SELECT id, password FROM users WHERE username = ?`
 	if typ == "email" {
 		query = `SELECT id, password FROM users WHERE email = ?`
-	}else if typ!="username"{
+	} else if typ != "username" {
 		return -1, "invalid login type"
 	}
 	stm, err := db.Prepare(query)
@@ -67,7 +67,6 @@ func CreateSession(db *sql.DB, id int, token string, creationTime time.Time, exp
 	return err
 }
 
-
 func CheckUsername(db *sql.DB, username string) int {
 	stm, err := db.Prepare(`SELECT COUNT(*) FROM users WHERE username = ?`)
 	if err != nil {
@@ -78,7 +77,7 @@ func CheckUsername(db *sql.DB, username string) int {
 	if err != nil {
 		return -1
 	}
-	
+
 	return int(n)
 }
 
@@ -95,42 +94,40 @@ func CheckEmail(db *sql.DB, email string) int {
 	return int(n)
 }
 
-
-func CheckSession(db *sql.DB,token string) (int) {
+func CheckSession(db *sql.DB, token string) int {
 	var n int64
 	stm, err := db.Prepare(`SELECT COUNT(*) FROM sessions WHERE token = ?`)
 	if err != nil {
-		log.Println("1",err)
+		log.Println("1", err)
 		return -1
 	}
 	err = stm.QueryRow(token).Scan(&n)
 	if err != nil {
-		log.Println("1",err)
+		log.Println("1", err)
 		return -1
 	}
 	return int(n)
 }
 
-
-func LogoutCheck(db *sql.DB, session string) (int) {
+func LogoutCheck(db *sql.DB, session string) int {
 	stm, err := db.Prepare(`SELECT user_id FROM sessions WHERE token = ?`)
 	if err != nil {
 		return -1
 	}
 	var id int
-	err =stm.QueryRow(session).Scan(&id)
+	err = stm.QueryRow(session).Scan(&id)
 	if err != nil {
 		return -1
 	}
 	return id
 }
 
-
-func DeleteSession(db *sql.DB, session string)(error) {
-	stm, err := db.Prepare(`DELETE * FROM sessions WHERE session = ?`)
+func DeleteSession(db *sql.DB, session string) error {
+	stm, err := db.Prepare(`DELETE FROM sessions WHERE token = ?`)
 	if err != nil {
 		return err
 	}
+	log.Println(session)
 	_, err = stm.Exec(session)
 	return err
 }
