@@ -1,4 +1,4 @@
-import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
+import { sendAuthData, sendlogindata, setupLogoutButton,setupComment } from "./user.js";
 
 export function showAuthFormLogin() {
     const root = document.getElementById('root');
@@ -185,22 +185,19 @@ function setupPostCreation() {
 }
 
 export async function loadPosts() {
-    
     try {
         const res = await fetch('/retrieve_posts');
         const posts = await res.json();
 
         const feed = document.querySelector('.posts-feed');
-        feed.innerHTML = ''; // Clear previous posts
+        feed.innerHTML = '';
 
-        posts.forEach(post => {
-            console.log(post.categorie);
-            
+        for (const post of posts) {
             const postEl = document.createElement('div');
             postEl.className = 'post-item';
             postEl.innerHTML = `
                 <h3 class="post-title">${post.title}</h3>
-                <h5 class="post-title">${post.categorie}</h3>
+                <h5 class="post-title">${post.categorie}</h5>
                 <p class="post-content">${post.content}</p>
                 <div class="post-meta">
                     <span>By <strong>${post.username}</strong></span> |
@@ -210,7 +207,6 @@ export async function loadPosts() {
                 <div class="comments-section">
                     <h4>Comments</h4>
                     <div class="comments-list">
-                        <!-- Comments can be dynamically loaded here -->
                         <p class="no-comments">No comments yet.</p>
                     </div>
                     <form class="comment-form">
@@ -220,27 +216,14 @@ export async function loadPosts() {
                 </div>
             `;
 
-            // Handle comment submission (in-memory for now)
-            const form = postEl.querySelector('.comment-form');
             const commentsList = postEl.querySelector('.comments-list');
             const noComments = postEl.querySelector('.no-comments');
 
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const input = form.querySelector('.comment-input');
-                const commentText = input.value.trim();
-                if (commentText) {
-                    const commentEl = document.createElement('p');
-                    commentEl.className = 'comment-item';
-                    commentEl.textContent = commentText;
-                    commentsList.appendChild(commentEl);
-                    input.value = '';
-                    noComments?.remove();
-                }
-            });
+            // Removed automatic comment display after submission
+            setupComment(post.id, commentsList, noComments);
 
             feed.appendChild(postEl);
-        });
+        }
     } catch (err) {
         console.error('Error loading posts:', err);
     }

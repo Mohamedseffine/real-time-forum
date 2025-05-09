@@ -95,3 +95,41 @@ export async function setupLogoutButton() {
         }
     });
 }
+export function setupComment(postId, commentsList, noCommentsEl) {
+    const form = commentsList.closest('.comments-section').querySelector('.comment-form');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = form.querySelector('.comment-input');
+        const content = input.value.trim();
+
+        if (!content) return;
+
+        const payload = {
+            user_id: parseInt(localStorage.getItem('id')),
+            postid: postId,
+            username: localStorage.getItem('username'),
+            content: content
+        };
+
+        try {
+            const res = await fetch('/create_comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error('Failed to post comment');
+            const savedComment = await res.json();
+            console.log(savedComment);
+            
+            input.value = '';
+            noCommentsEl?.remove();
+        } catch (err) {
+            alert(`Error: ${err.message}`);
+        }
+    });
+}
