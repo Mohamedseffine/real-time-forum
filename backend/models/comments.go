@@ -8,12 +8,12 @@ import (
 	"rt_forum/backend/objects"
 )
 
-func InsertComments(db *sql.DB, userid int, postid int, content string) (int, error) {
-	stm, err := db.Prepare(`INSERT INTO comments (creator_id, post_id, creation_date, content) VALUES (?,?,?,?)`)
+func InsertComments(db *sql.DB, userid int, postid int, content string, username string) (int, error) {
+	stm, err := db.Prepare(`INSERT INTO comments (creator_id, post_id, username, creation_date, content) VALUES (?,?,?,?,?)`)
 	if err != nil {
 		return -1, err
 	}
-	res, err := stm.Exec(userid, postid, time.Now(), html.EscapeString(content))
+	res, err := stm.Exec(userid, postid, username, time.Now(), html.EscapeString(content))
 	if err != nil {
 		return -1, err
 	}
@@ -26,7 +26,7 @@ func InsertComments(db *sql.DB, userid int, postid int, content string) (int, er
 
 func GetComments(db *sql.DB, postid int) ([]objects.Comment, error) {
 	rows, err := db.Query(`
-		SELECT id, creator_id, post_id, creation_date, content 
+		SELECT id, creator_id, post_id, username, creation_date, content 
 		FROM comments 
 		WHERE post_id = ?`, postid)
 	if err != nil {
@@ -37,7 +37,7 @@ func GetComments(db *sql.DB, postid int) ([]objects.Comment, error) {
 	var comments []objects.Comment
 	for rows.Next() {
 		var comment objects.Comment
-		err := rows.Scan(&comment.CommentId, &comment.UserId, &comment.PostId, &comment.Time, &comment.Content)
+		err := rows.Scan(&comment.CommentId, &comment.UserId, &comment.PostId, &comment.Username, &comment.Time, &comment.Content)
 		if err != nil {
 			return nil, err
 		}

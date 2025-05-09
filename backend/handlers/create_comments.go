@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
@@ -19,7 +20,9 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB)  {
 		return
 	}
 	err := json.NewDecoder(r.Body).Decode(&comment)
+	log.Println(comment)
 	if err != nil {
+		log.Println("1", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -27,8 +30,10 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB)  {
 		})
 		return 
 	}
-	id, err := models.InsertComments(db, comment.UserId,comment.PostId,comment.Content)
+	log.Println(comment.Username)
+	id, err := models.InsertComments(db, comment.UserId,comment.PostId,comment.Content, comment.Username)
 	if err != nil {
+		log.Println("2", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{

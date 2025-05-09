@@ -51,10 +51,10 @@ type Comment struct {
 	CommentId int       `json:"comment_id"`
 	UserId    int       `json:"user_id"`
 	PostId    int       `json:"post_id"`
+	Username  string    `json:"username"`
 	Time      time.Time `json:"time"`
 	Content   string    `json:"content"`
 }
-
 
 type User struct {
 	Id           int

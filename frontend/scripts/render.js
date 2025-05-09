@@ -232,6 +232,7 @@ function setupComment(postId) {
                 },
                 body: JSON.stringify({
                     post_id: postId,
+                    username:localStorage.getItem('username'),
                     user_id: parseInt(localStorage.getItem('id')),
                     content: commentText
                 })
