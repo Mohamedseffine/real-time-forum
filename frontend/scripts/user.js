@@ -133,3 +133,18 @@ export function setupComment(postId, commentsList, noCommentsEl) {
         }
     });
 }
+
+export function updateUserlist(users){
+    const userList = document.querySelector('.users-list')
+    userList.innerHTML=''
+    if (users.length == 0){
+        userList.innerHTML= '<p>No users found.</p>'
+        return
+    } 
+    users.forEach(username => {
+        const userItem = document.createElement('div')
+        userItem.className = 'user-item';
+        userItem.textContent = username
+        userList.appendChild(userItem)        
+    });
+}

@@ -28,7 +28,7 @@ export function showAuthFormLogin() {
 
     formContainer.querySelector('.switch-auth-btn').addEventListener('click', showAuthFormSignup);
 }
-
+    
 export function showAuthFormSignup() {
     const root = document.getElementById('root');
     root.innerHTML = '';
@@ -67,6 +67,7 @@ export function showAuthFormSignup() {
 }
 
 export function createBaseLayout() {
+ 
     const root = document.getElementById('root');
     root.innerHTML = '';
 
@@ -140,6 +141,11 @@ function setupPostCreation() {
             content,
             categories: selectedCategories
         };
+        // if (document.cookie && document.cookie !== "") {
+        //     console.log("There are cookies!");
+        // } else {
+        //     console.log("No cookies found.");
+        // }
 
         try {
             const res = await fetch('/create_post', {

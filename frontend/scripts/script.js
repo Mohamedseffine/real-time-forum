@@ -1,7 +1,8 @@
 import { showAuthFormSignup, createBaseLayout } from "./render.js";
+import {updateUserlist}from "./user.js"
 
 // Initialize WebSocket connection
-export function initializeWebSocket() {
+ function initializeWebSocket() {
     if (window["WebSocket"]) {
         const conn = new WebSocket("ws://" + document.location.host + "/chat");
         
@@ -13,7 +14,9 @@ export function initializeWebSocket() {
             try {
                 const data = JSON.parse(evt.data);
                 console.log("Received data:", data);
-                // Handle incoming messages here
+                if (data.type === 'all_users'){
+                    updateUserlist(data.users)
+                }
             } catch (err) {
                 console.error("Error parsing WebSocket message:", err);
             }
@@ -31,6 +34,7 @@ export function initializeWebSocket() {
     }
     return null;
 }
+initializeWebSocket()
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
