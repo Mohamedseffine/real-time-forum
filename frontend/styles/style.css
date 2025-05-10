@@ -735,6 +735,7 @@ select:focus {
 
 .comment-input:focus {
     background-color: white;
+    color: black;
 }
 
 .comment-btn {
