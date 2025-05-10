@@ -56,28 +56,6 @@ CREATE TABLE
         FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
     );
 
--- Post reactions table
-CREATE TABLE
-    IF NOT EXISTS post_react (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        creator_id INTEGER NOT NULL,
-        post_id INTEGER NOT NULL,
-        react_type INTEGER NOT NULL,
-        FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
-    );
-
--- Comment reactions table
-CREATE TABLE
-    IF NOT EXISTS comment_react (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        creator_id INTEGER NOT NULL,
-        comment_id INTEGER NOT NULL,
-        react_type INTEGER NOT NULL,
-        FOREIGN KEY (creator_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (comment_id) REFERENCES comments (id) ON DELETE CASCADE
-    );
-
 -- Messages table
 CREATE TABLE
     IF NOT EXISTS messages (
@@ -85,6 +63,9 @@ CREATE TABLE
         sender_id INTEGER NOT NULL,
         receiver_id INTEGER NOT NULL,
         content TEXT NOT NULL,
+        mtype VARCHAR(20) NOT NULL,
+        sender_username VARCHAR(50) NOT NULL,
+        reciever_username VARCHAR(50) NOT NULL,
         FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
     );
@@ -108,3 +89,12 @@ CREATE TABLE
         FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
         FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
     );
+
+
+CREATE TABLE
+    IF NOT EXISTS chats (
+        chat_id INTEGER PRIMARY KEY,
+        unread_messages INTEGER NOT NULL,
+        st_part VARCHAR(50) NOT NULL,
+        nd_part VARCHAR(50) NOT NULL
+    )
