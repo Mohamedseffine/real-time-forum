@@ -91,7 +91,6 @@ type Error struct {
 
 
 type WsData struct {
-	Type string `json:"type"`
+	Type int `json:"type"`
 	Message string `json:"message"`
-	SenderId  int `json:"id"`
 }

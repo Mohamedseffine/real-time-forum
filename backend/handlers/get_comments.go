@@ -9,9 +9,7 @@ import (
 	"rt_forum/backend/models"
 )
 
-type data struct {
-	PostId int `json:"postid"`
-}
+
 
 func RetrieveComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method != http.MethodGet {
