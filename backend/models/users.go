@@ -132,9 +132,8 @@ func DeleteSession(db *sql.DB, session string) error {
 	return err
 }
 
-
 func GetId(db *sql.DB, token string) (int, error) {
-	stm, err:= db.Prepare(`SELECT user_id FROM sessions WHERE token = ?`)
+	stm, err := db.Prepare(`SELECT user_id FROM sessions WHERE token = ?`)
 	if err != nil {
 		return -1, err
 	}
@@ -144,4 +143,25 @@ func GetId(db *sql.DB, token string) (int, error) {
 		return -1, err
 	}
 	return id, nil
+}
+
+func GetAllUsers(db *sql.DB) ([]objects.WsData, error) {
+	stm, err := db.Prepare(`SELECT id, username FROM users`)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := stm.Query()
+	if err != nil {
+		return nil, err
+	}
+	var users []objects.WsData
+	for rows.Next() {
+		var user objects.WsData
+		err = rows.Scan(&user.Type, &user.Message)
+		if err != nil {
+			return nil, err
+		}
+		users=append(users, user)
+	}
+	return users, nil
 }
