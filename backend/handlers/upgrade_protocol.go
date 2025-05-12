@@ -60,6 +60,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			}
 		}
 	}
+	var data objects.WsData
 	users, err := models.GetAllUsers(db)
 	if err != nil {
 		log.Println(err)
@@ -68,7 +69,10 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	Conn.WriteJSON(users)
+	data.Type="all_users"
+	data.Message="sent"
+	data.Users=users
+	Conn.WriteJSON(data)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)

@@ -145,7 +145,7 @@ func GetId(db *sql.DB, token string) (int, error) {
 	return id, nil
 }
 
-func GetAllUsers(db *sql.DB) ([]objects.WsData, error) {
+func GetAllUsers(db *sql.DB) ([]objects.Infos, error) {
 	stm, err := db.Prepare(`SELECT id, username FROM users`)
 	if err != nil {
 		return nil, err
@@ -154,10 +154,10 @@ func GetAllUsers(db *sql.DB) ([]objects.WsData, error) {
 	if err != nil {
 		return nil, err
 	}
-	var users []objects.WsData
+	var users []objects.Infos
 	for rows.Next() {
-		var user objects.WsData
-		err = rows.Scan(&user.Type, &user.Message)
+		var user objects.Infos
+		err = rows.Scan(&user.Id, &user.Username)
 		if err != nil {
 			return nil, err
 		}
