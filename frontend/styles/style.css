@@ -421,7 +421,7 @@ select:focus {
     margin: 0;
 }
 
-.users-header::after {
+/* .users-header::after, */ #active::after { 
     content: '';
     display: inline-block;
     width: 8px;

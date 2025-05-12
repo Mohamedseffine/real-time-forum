@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
@@ -49,7 +48,6 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	Users[id] = Conn
 
-	log.Println(Users)
 	defer delete(Users, id)
 	if len(Users) > 1 {
 		for _, val := range Users {
@@ -63,15 +61,20 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var data objects.WsData
 	users, err := models.GetAllUsers(db)
 	if err != nil {
-		log.Println(err)
 		Conn.WriteJSON(map[string]any{
 			"error": err,
 		})
 		return
 	}
-	data.Type="all_users"
-	data.Message="sent"
-	data.Users=users
+	for i := range users {
+		if Users[users[i].Id] != nil {
+
+			users[i].IsActive = 1
+		}
+	}
+	data.Type = "all_users"
+	data.Message = "sent"
+	data.Users = users
 	Conn.WriteJSON(data)
 	for {
 		var message objects.WsData
