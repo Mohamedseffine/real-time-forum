@@ -142,8 +142,12 @@ export function updateUserlist(users){
         return
     } 
     users.forEach(user => {
+
         const userItem = document.createElement('div')
         userItem.id=user.id
+        if (user.active==1){
+            userItem.id="active"
+        }
         userItem.className = 'user-item';
         userItem.textContent = user.username
         userList.appendChild(userItem)        

@@ -99,4 +99,5 @@ type WsData struct {
 type Infos struct {
 	Id int `json:"id"`
 	Username string `json:"username"`
+	IsActive int `json:"active"`
 }

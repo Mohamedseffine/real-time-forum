@@ -88,7 +88,7 @@ export function createBaseLayout() {
     sidebar.className = 'users-sidebar';
     sidebar.innerHTML = `
         <div class="users-header">
-            <h2>Active Users</h2>
+            <h2>All Users</h2>
         </div>
         <div class="users-list"></div>
     `;
