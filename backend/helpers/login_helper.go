@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -51,9 +50,6 @@ func IsLoggedIn(db *sql.DB, r *http.Request) bool {
 		return false
 	}
 	n := models.CheckSession(db, strings.TrimPrefix(token.String(), "token="))
-	log.Println(n)
-	if n == 1 {
-		return true
-	}
-	return false
+	return n == 1 
+	
 }

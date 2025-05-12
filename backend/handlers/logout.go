@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"rt_forum/backend/models"
@@ -34,7 +33,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	log.Println(data)
 	id := models.LogoutCheck(db, data.Token)
 
 	if id != data.Id {
@@ -52,7 +50,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	})
 	err = models.DeleteSession(db, data.Token)
 	if err != nil {
-		log.Println(err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{

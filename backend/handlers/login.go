@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -36,7 +35,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	id, erro := models.ExtractUser(db, userdata.Password, userdata.Username, userdata.LogType)
 	if erro != "" {
-		fmt.Println(erro)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -44,7 +42,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	fmt.Println(id)
 	token, err := uuid.NewV4()
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -74,6 +71,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"id":       id,
 		"username": userdata.Username,
-		"token":token.String(),
+		"token":    token.String(),
 	})
 }

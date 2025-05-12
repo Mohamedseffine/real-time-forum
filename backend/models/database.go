@@ -3,13 +3,14 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
-	_"github.com/mattn/go-sqlite3"
+	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var database *sql.DB
 
-func DatabaseExec()*sql.DB {
+func DatabaseExec() *sql.DB {
 	err := error(nil)
 	database, err = sql.Open("sqlite3", "./database/database.db")
 	if err != nil {
@@ -18,17 +19,17 @@ func DatabaseExec()*sql.DB {
 	}
 
 	// Read the schema SQL file
-	schema, err := ioutil.ReadFile("./database/schema.sql")
+	schema, err := os.ReadFile("./database/schema.sql")
 	if err != nil {
 		fmt.Println(" failed to read schema file: ", err)
-		return nil 
+		return nil
 	}
 
 	// Execute the SQL commands in the schema file
 	_, err = database.Exec(string(schema))
 	if err != nil {
 		fmt.Println(" failed to execute schema:", err)
-		return nil 
+		return nil
 	}
 	fmt.Println("ok dazt mzian gng")
 	return database
