@@ -3,7 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
+
 	"net/http"
 
 	"rt_forum/backend/models"
@@ -29,7 +29,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	log.Println(post)
+
 	id, err := models.InsertPost(db, post)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
