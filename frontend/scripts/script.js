@@ -2,7 +2,7 @@ import { showAuthFormSignup, createBaseLayout } from "./render.js";
 import {updateUserlist}from "./user.js"
 
 // Initialize WebSocket connection
- function initializeWebSocket() {
+ export function initializeWebSocket() {
     if (window["WebSocket"]) {
         const conn = new WebSocket("ws://" + document.location.host + "/chat");
         
@@ -34,8 +34,6 @@ import {updateUserlist}from "./user.js"
     }
     return null;
 }
-initializeWebSocket()
-
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');

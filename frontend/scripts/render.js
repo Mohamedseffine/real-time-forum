@@ -1,4 +1,5 @@
 import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
+import {initializeWebSocket} from "./script.js"
 
 export function showAuthFormLogin() {
     const root = document.getElementById('root');
@@ -67,7 +68,7 @@ export function showAuthFormSignup() {
 }
 
 export function createBaseLayout() {
- 
+    initializeWebSocket()
     const root = document.getElementById('root');
     root.innerHTML = '';
 
