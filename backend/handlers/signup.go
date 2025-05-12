@@ -126,7 +126,6 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	User.Id = id
 	token, err := uuid.NewV4()
 	if err != nil {
 		log.Println("4", err)
