@@ -141,10 +141,11 @@ export function updateUserlist(users){
         userList.innerHTML= '<p>No users found.</p>'
         return
     } 
-    users.forEach(username => {
+    users.forEach(user => {
         const userItem = document.createElement('div')
+        userItem.id=user.id
         userItem.className = 'user-item';
-        userItem.textContent = username
+        userItem.textContent = user.username
         userList.appendChild(userItem)        
     });
 }

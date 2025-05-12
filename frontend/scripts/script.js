@@ -7,7 +7,7 @@ import {updateUserlist}from "./user.js"
         const conn = new WebSocket("ws://" + document.location.host + "/chat");
         conn.onopen = () => {
             conn.send(JSON.stringify({
-                type:1,
+                type:"message",
                 message:"hi"
             }))
             console.log("WebSocket connection established");
