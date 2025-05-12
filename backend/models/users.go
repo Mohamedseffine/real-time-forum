@@ -95,7 +95,7 @@ func CheckEmail(db *sql.DB, email string) int {
 }
 
 func CheckSession(db *sql.DB, token string) int {
-	var n int64
+	var n int
 	stm, err := db.Prepare(`SELECT COUNT(*) FROM sessions WHERE token = ?`)
 	if err != nil {
 		log.Println("1", err)
@@ -106,7 +106,7 @@ func CheckSession(db *sql.DB, token string) int {
 		log.Println("1", err)
 		return -1
 	}
-	return int(n)
+	return n
 }
 
 func LogoutCheck(db *sql.DB, session string) int {
@@ -130,4 +130,18 @@ func DeleteSession(db *sql.DB, session string) error {
 	log.Println(session)
 	_, err = stm.Exec(session)
 	return err
+}
+
+
+func GetId(db *sql.DB, token string) (int, error) {
+	stm, err:= db.Prepare(`SELECT user_id FROM sessions WHERE token = ?`)
+	if err != nil {
+		return -1, err
+	}
+	var id int
+	err = stm.QueryRow(token).Scan(&id)
+	if err != nil {
+		return -1, err
+	}
+	return id, nil
 }

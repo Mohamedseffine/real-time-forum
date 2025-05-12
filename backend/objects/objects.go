@@ -88,3 +88,10 @@ type Error struct {
 	StatusCode   int
 	ErrorMessage string
 }
+
+
+type WsData struct {
+	Type string `json:"type"`
+	Message string `json:"message"`
+	SenderId  int `json:"id"`
+}
