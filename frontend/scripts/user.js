@@ -145,7 +145,7 @@ export function updateUserlist(users){
 
         const userItem = document.createElement('div')
         userItem.id=user.id
-        if (user.active==1){
+        if (user.active==1 && user.id != parseInt(localStorage.getItem("id"))){
             userItem.id="active"
         }
         userItem.className = 'user-item';

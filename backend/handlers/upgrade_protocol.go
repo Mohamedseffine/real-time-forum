@@ -49,7 +49,9 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	mu.Lock()
 	objects.Users[id] = Conn
 	mu.Unlock()
+	mu.Lock()
 	defer delete(objects.Users, id)
+	mu.Unlock()
 	if len(objects.Users) > 1 {
 		for _, val := range objects.Users {
 			if val != Conn {
