@@ -30,7 +30,6 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	defer Conn.Close()
 	token, err := r.Cookie("token")
 	if err != nil {
 		Conn.WriteJSON(map[string]any{
@@ -39,7 +38,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	id, err := models.GetId(db, strings.TrimPrefix(token.String(), "token="))
-
+	defer handleConnClosure(Conn, id)
 	if err != nil {
 		Conn.WriteJSON(map[string]any{
 			"error": "pppppppppppppppppppppp",
@@ -49,9 +48,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	mu.Lock()
 	objects.Users[id] = Conn
 	mu.Unlock()
-	mu.Lock()
-	defer delete(objects.Users, id)
-	mu.Unlock()
+
 	if len(objects.Users) > 1 {
 		for _, val := range objects.Users {
 			if val != Conn {
@@ -62,7 +59,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 	var data objects.WsData
-	users, err := models.GetAllUsers(db)
+	users, err := models.GetAllUsers(db, id)
 	if err != nil {
 		Conn.WriteJSON(map[string]any{
 			"error": err,
@@ -99,4 +96,19 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 
+}
+
+func handleConnClosure(Conn *websocket.Conn, id int) {
+	mu.Lock()
+	delete(objects.Users, id)
+	mu.Unlock()
+	Conn.Close()
+	for _, val := range objects.Users {
+		if val != Conn {
+			val.WriteJSON(map[string]any{
+				"type": "Disconneted",
+				"id":   id,
+			})
+		}
+	}
 }

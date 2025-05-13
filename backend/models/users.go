@@ -155,12 +155,12 @@ func GetId(db *sql.DB, token string) (int, error) {
 	return id, nil
 }
 
-func GetAllUsers(db *sql.DB) ([]objects.Infos, error) {
-	stm, err := db.Prepare(`SELECT id, username FROM users`)
+func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
+	stm, err := db.Prepare(`SELECT id, username FROM users WHERE id != ?`)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := stm.Query()
+	rows, err := stm.Query(id)
 	if err != nil {
 		return nil, err
 	}
