@@ -133,23 +133,83 @@ export function setupComment(postId, commentsList, noCommentsEl) {
         }
     });
 }
+export function updateUserlist(users) {
+    const userList = document.querySelector('.users-list');
+    userList.innerHTML = '';
 
-export function updateUserlist(users){
-    const userList = document.querySelector('.users-list')
-    userList.innerHTML=''
-    if (users.length == 0){
-        userList.innerHTML= '<p>No users found.</p>'
-        return
-    } 
+    if (users.length === 0) {
+        userList.innerHTML = '<p>No users found.</p>';
+        return;
+    }
+
     users.forEach(user => {
+        if (user.id === parseInt(localStorage.getItem("id"))) return;
 
-        const userItem = document.createElement('div')
-        userItem.id=user.id
-        if (user.active==1 && user.id != parseInt(localStorage.getItem("id"))){
-            userItem.id="active"
-        }
+        const userItem = document.createElement('button');
         userItem.className = 'user-item';
-        userItem.textContent = user.username
-        userList.appendChild(userItem)        
+        userItem.textContent = user.username;
+        userItem.dataset.userid = user.id; 
+
+        if (user.active === 1) {
+            userItem.classList.add('active');
+        }
+
+        // Attach event to open chat
+        userItem.addEventListener('click', () => {
+            openChatWithUser(user);
+        });
+
+        userList.appendChild(userItem);
     });
 }
+
+// Example placeholder function to open chat (implement your chat logic here)
+function openChatWithUser(user) {
+    let chatArea = document.querySelector('.chat-area');
+
+    // If it already exists, remove it before creating a new one
+    if (chatArea) {
+        chatArea.remove();
+    }
+
+    chatArea = document.createElement('div');
+    chatArea.className = 'chat-area';
+
+    chatArea.innerHTML = `
+        <div class="chat-header">
+            Chat with ${user.username}
+            <button class="close-chat-btn">✖</button>
+        </div>
+        <div class="chat-messages" id="chat-${user.id}"></div>
+        <input type="text" class="chat-input" placeholder="Type a message...">
+        <button class="send-btn">Send</button>
+    `;
+
+    document.body.appendChild(chatArea);
+
+    const closeBtn = chatArea.querySelector('.close-chat-btn');
+    closeBtn.addEventListener('click', () => {
+        chatArea.remove();
+    });
+
+    const sendBtn = chatArea.querySelector('.send-btn');
+    sendBtn.addEventListener('click', () => {
+        sendMessage(user.id);
+    });
+}
+
+
+// function sendMessage(userId) {
+//     const input = document.querySelector('.chat-input');
+//     const message = input.value.trim();
+//     if (!message) return;
+
+//     const messageBox = document.getElementById(`chat-${userId}`);
+//     const msgElement = document.createElement('div');
+//     msgElement.className = 'my-message';
+//     msgElement.textContent = message;
+//     messageBox.appendChild(msgElement);
+//     input.value = '';
+
+//     // You'd normally emit this over WebSocket or post to backend
+// }
