@@ -7,6 +7,7 @@ import (
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
 	"strings"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,8 +19,7 @@ var websocketUpgrader = websocket.Upgrader{
 		return true
 	},
 }
-
-var Users = make(map[int]*websocket.Conn, 24)
+var mu sync.RWMutex
 
 func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	Conn, err := websocketUpgrader.Upgrade(w, r, nil)
@@ -46,11 +46,12 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	Users[id] = Conn
-
-	defer delete(Users, id)
-	if len(Users) > 1 {
-		for _, val := range Users {
+	mu.Lock()
+	objects.Users[id] = Conn
+	mu.Unlock()
+	defer delete(objects.Users, id)
+	if len(objects.Users) > 1 {
+		for _, val := range objects.Users {
 			if val != Conn {
 				val.WriteJSON(map[string]any{
 					"id": id,
@@ -67,7 +68,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	for i := range users {
-		if Users[users[i].Id] != nil {
+		if objects.Users[users[i].Id] != nil {
 
 			users[i].IsActive = 1
 		}
@@ -85,8 +86,8 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			})
 			return
 		}
-		if len(Users) > 1 {
-			for _, val := range Users {
+		if len(objects.Users) > 1 {
+			for _, val := range objects.Users {
 				if val != Conn {
 					val.WriteJSON(map[string]any{
 						"message": message,
