@@ -134,7 +134,7 @@ export function setupComment(postId, commentsList, noCommentsEl) {
         }
     });
 }
-export function updateUserlist(users) {
+export function updateUserlist(users, id) {
     const userList = document.querySelector('.users-list');
     userList.innerHTML = '';
 
@@ -145,7 +145,11 @@ export function updateUserlist(users) {
 
     users.forEach(user => {
         if (user.id === parseInt(localStorage.getItem("id"))) return;
-
+        if (user.id ===id) {
+            console.log("hahaha");
+            
+            return
+        };
         const userItem = document.createElement('button');
         userItem.className = 'user-item';
         userItem.textContent = user.username;

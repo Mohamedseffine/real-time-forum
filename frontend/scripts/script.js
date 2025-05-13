@@ -1,6 +1,6 @@
 import { showAuthFormSignup, createBaseLayout } from "./render.js";
 import {updateUserlist}from "./user.js"
-
+ var userlist
 // Initialize WebSocket connection
 export let conn
  export function initializeWebSocket() {
@@ -21,8 +21,13 @@ export let conn
                 const data = JSON.parse(evt.data);
                 console.log("Received data:", data);
                 if (data.type === 'all_users'){
+                    userlist=data.users
                     console.log(data.users);
-                    updateUserlist(data.users)
+                    updateUserlist(data.users, 0 )
+                }else if (data.type === "Disconneted"){
+                    updateUserlist(userlist, data.id)
+                }else if  (data.type === "connected"){
+
                 }
             } catch (err) {
                 console.error("Error parsing WebSocket message:", err);
