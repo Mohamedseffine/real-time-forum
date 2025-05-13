@@ -30,31 +30,41 @@ func InsertUser(db *sql.DB, user objects.LogData) (int, error) {
 	return int(lastid), nil
 }
 
-func ExtractUser(db *sql.DB, password string, log string, typ string) (int, string) {
+func ExtractUser(db *sql.DB, password string, log string, typ string) (int, string, string) {
 	query := `SELECT id, password FROM users WHERE username = ?`
 	if typ == "email" {
 		query = `SELECT id, password FROM users WHERE email = ?`
 	} else if typ != "username" {
-		return -1, "invalid login type"
+		return -1, "", "invalid login type"
 	}
 	stm, err := db.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
-		return -1, "database error"
+		return -1, "", "database error"
 	}
 	defer stm.Close()
 	var id int
 	var hashpassword string
 	err = stm.QueryRow(log).Scan(&id, &hashpassword)
 	if err != nil {
-		return -1, "invalid username"
+		return -1, "", "invalid username"
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(hashpassword), []byte(password))
 	if err != nil {
-		return -1, "invalid password"
+		return -1, "", "invalid password"
 	}
-
-	return int(id), ""
+	var username string
+	if typ == "email" {
+		stm, err := db.Prepare(`SELECT username FROM users WHERE email = ?`)
+		if err != nil {
+			return -1, "", "invalid username"
+		}
+		err = stm.QueryRow(log).Scan(&username)
+		if err != nil {
+			return -1, "", "invalid username"
+		}
+	}
+	return int(id), username, ""
 }
 
 func CreateSession(db *sql.DB, id int, token string, creationTime time.Time, expiration time.Time) error {
@@ -161,7 +171,7 @@ func GetAllUsers(db *sql.DB) ([]objects.Infos, error) {
 		if err != nil {
 			return nil, err
 		}
-		users=append(users, user)
+		users = append(users, user)
 	}
 	return users, nil
 }

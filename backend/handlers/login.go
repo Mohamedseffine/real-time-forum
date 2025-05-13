@@ -33,7 +33,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	id, erro := models.ExtractUser(db, userdata.Password, userdata.Username, userdata.LogType)
+	id, username,erro := models.ExtractUser(db, userdata.Password, userdata.Username, userdata.LogType)
 	if erro != "" {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -68,9 +68,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"id":       id,
-		"username": userdata.Username,
+		"username":username,
 		"token":    token.String(),
 	})
 }
