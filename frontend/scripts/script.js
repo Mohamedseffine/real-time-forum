@@ -2,9 +2,10 @@ import { showAuthFormSignup, createBaseLayout } from "./render.js";
 import {updateUserlist}from "./user.js"
 
 // Initialize WebSocket connection
+export let conn
  export function initializeWebSocket() {
     if (window["WebSocket"]) {
-        const conn = new WebSocket("ws://" + document.location.host + "/chat");
+         conn = new WebSocket("ws://" + document.location.host + "/chat");
         conn.onopen = () => {
             conn.send(JSON.stringify({
                 type:"message",

@@ -1,5 +1,5 @@
 import { createBaseLayout, showAuthFormLogin } from "./render.js";
-
+import {conn} from "./script.js"
 export async function sendlogindata(username, password) {
     const type = username.includes('@') ? "email" : "username";
     const authData = {
@@ -87,6 +87,7 @@ export async function setupLogoutButton() {
             localStorage.removeItem('token');
             localStorage.removeItem('id');
             localStorage.removeItem('username');
+            conn.close()
             showAuthFormLogin();
         }
         }catch{

@@ -1,6 +1,7 @@
 import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
 import {initializeWebSocket} from "./script.js"
 
+
 export function showAuthFormLogin() {
     const root = document.getElementById('root');
     root.innerHTML = '';
