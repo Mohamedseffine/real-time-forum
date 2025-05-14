@@ -205,17 +205,32 @@ function openChatWithUser(user) {
 }
 
 
-// function sendMessage(userId) {
-//     const input = document.querySelector('.chat-input');
-//     const message = input.value.trim();
-//     if (!message) return;
+function sendMessage(userId) {
+    const input = document.querySelector('.chat-input');
+    const message = input.value.trim();
+    if (!message) return;
 
-//     const messageBox = document.getElementById(`chat-${userId}`);
-//     const msgElement = document.createElement('div');
-//     msgElement.className = 'my-message';
-//     msgElement.textContent = message;
-//     messageBox.appendChild(msgElement);
-//     input.value = '';
+    const messageBox = document.getElementById(`chat-${userId}`);
+    const msgElement = document.createElement('div');
+    msgElement.className = 'my-message';
+    msgElement.textContent = message;
+    messageBox.appendChild(msgElement);
+    input.value = '';
+    let msg ={
+        type : "message",
+        message : message,
+        id : localStorage.getItem('id'),
+        username : localStorage.getItem('username'),
+        receiver_id : userId
+    }
+    if (conn.readyState === WebSocket.OPEN){
+        conn.send(JSON.stringify(msg))
+        console.log("dkhlat hna");
+    }else{
+        console.log("websocket not open");
+        
+    }
+    
+   
 
-//     // You'd normally emit this over WebSocket or post to backend
-// }
+}
