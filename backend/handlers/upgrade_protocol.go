@@ -78,7 +78,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	data.Message = "sent"
 	data.Users = users
 	Conn.WriteJSON(data)
-	updateLoginState(Conn, id)
+	updateLoginState(Conn, id, data.Users)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)
@@ -117,13 +117,14 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 }
 
 
-func updateLoginState(Conn *websocket.Conn, id int)  {
+func updateLoginState(Conn *websocket.Conn, id int, users []objects.Infos)  {
 	log.Println(objects.Users)
 	for _, val := range objects.Users {
 		if val != Conn {
 			val.WriteJSON(map[string]any{
 				"type":"connected",
 				"id":id,
+				"users":users,
 			})
 		}
 	}

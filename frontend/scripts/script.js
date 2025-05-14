@@ -15,22 +15,19 @@ export let conn
         };
         
         conn.onmessage = (evt) => {
-            console.log(evt);
-            
             try {
                 const data = JSON.parse(evt.data);
-                console.log("Received data:", data);
                 if (data.type === 'all_users'){
-                    userlist=data.users
-                    console.log(data.users);
                     updateUserlist(data.users, 0 )
                 }else if (data.type === "Disconneted"){
                     document.getElementById(""+data.id).classList.remove('active')
                 }else if  (data.type === "connected"){
-                    console.log(data);
-                    console.log("hunniniuiduidjuijfiufjujfuifjjfjjfjjffjfjfjjffjfjfjfjfj");
-                    
-                    document.getElementById(""+data.id).classList.add('active')
+                    if (document.getElementById(""+data.id)!=null) {
+                        document.getElementById(""+data.id).classList.add('active')
+                    }else if (document.getElementById(""+data.id)===null){
+                       console.log(data.users);
+                       updateUserlist(data.users, 0)
+                    }
                 }
             } catch (err) {
                 console.error("Error parsing WebSocket message:", err);

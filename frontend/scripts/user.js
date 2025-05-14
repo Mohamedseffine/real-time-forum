@@ -167,6 +167,8 @@ export function updateUserlist(users, id) {
 
         userList.appendChild(userItem);
     });
+    console.log("za");
+    
 }
 
 // Example placeholder function to open chat (implement your chat logic here)
