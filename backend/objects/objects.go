@@ -72,7 +72,6 @@ type User struct {
 }
 
 type Chat struct {
-	Id       int       `json:"id"`
 	Messages []Message `json:"messages"`
 }
 

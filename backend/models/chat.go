@@ -5,13 +5,13 @@ import (
 	"rt_forum/backend/objects"
 )
 
-func GetChat(db *sql.DB, ChatId int, lastInsertedId int) (objects.Chat, error) {
+func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (objects.Chat, error) {
 	var chat objects.Chat
-	stm, err := db.Prepare(`SELECT * FROM messages WHERE chat_id = ? AND id > ? LIMIT 10`)
+	stm, err := db.Prepare(`SELECT * FROM messages WHERE sender_id = ? AND reciever_id = ? AND id > ? LIMIT 10`)
 	if err != nil {
 		return objects.Chat{}, err
 	}
-	rows, err := stm.Query(ChatId, lastInsertedId)
+	rows, err := stm.Query(senderId, recieverId, lastInsertedId)
 	if err != nil {
 		return objects.Chat{}, err
 	}
