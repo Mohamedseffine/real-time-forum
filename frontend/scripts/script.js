@@ -25,9 +25,9 @@ export let conn
                     console.log(data.users);
                     updateUserlist(data.users, 0 )
                 }else if (data.type === "Disconneted"){
-                    updateUserlist(userlist, data.id)
+                    document.getElementById(""+data.id).classList.remove('active')
                 }else if  (data.type === "connected"){
-
+                    document.getElementById(""+data.id).classList.add('active')
                 }
             } catch (err) {
                 console.error("Error parsing WebSocket message:", err);

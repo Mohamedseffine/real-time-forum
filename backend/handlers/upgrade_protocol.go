@@ -47,6 +47,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	mu.Lock()
 	objects.Users[id] = Conn
+	updateLoginState(Conn, id)
 	mu.Unlock()
 
 	if len(objects.Users) > 1 {
@@ -108,6 +109,18 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 			val.WriteJSON(map[string]any{
 				"type": "Disconneted",
 				"id":   id,
+			})
+		}
+	}
+}
+
+
+func updateLoginState(Conn *websocket.Conn, id int)  {
+	for _, val := range objects.Users {
+		if val != Conn {
+			Conn.WriteJSON(map[string]any{
+				"type":"connected",
+				"id":id,
 			})
 		}
 	}

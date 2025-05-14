@@ -428,7 +428,7 @@ select:focus {
     height: 8px;
     background-color: var(--secondary);
     border-radius: 50%;
-    box-shadow: 0 0 0 2px rgba(45, 206, 137, 0.3);
+    box-shadow: 0 0 0 2px rgba(1, 104, 59, 0.3);
     animation: pulse 2s infinite;
 }
 
