@@ -66,11 +66,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Expires:  time.Now().Add(2 * time.Hour),
 		HttpOnly: true,
 	})
+	if username!="" {
+		userdata.Username=username
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]any{
 		"id":       id,
-		"username":username,
+		"username":userdata.Username,
 		"token":    token.String(),
 	})
 }
