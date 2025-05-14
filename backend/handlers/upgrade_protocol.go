@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
@@ -29,7 +30,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-
+	
 	token, err := r.Cookie("token")
 	if err != nil {
 		Conn.WriteJSON(map[string]any{
@@ -47,14 +48,14 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	mu.Lock()
 	objects.Users[id] = Conn
-	updateLoginState(Conn, id)
 	mu.Unlock()
-
+	
 	if len(objects.Users) > 1 {
 		for _, val := range objects.Users {
 			if val != Conn {
-				val.WriteJSON(map[string]any{
-					"id": id,
+				Conn.WriteJSON(map[string]any{
+					"type":"connected",
+					"id":id,
 				})
 			}
 		}
@@ -69,7 +70,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	for i := range users {
 		if objects.Users[users[i].Id] != nil {
-
+			
 			users[i].IsActive = 1
 		}
 	}
@@ -77,6 +78,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	data.Message = "sent"
 	data.Users = users
 	Conn.WriteJSON(data)
+	updateLoginState(Conn, id)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)
@@ -116,9 +118,10 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 
 
 func updateLoginState(Conn *websocket.Conn, id int)  {
+	log.Println(objects.Users)
 	for _, val := range objects.Users {
 		if val != Conn {
-			Conn.WriteJSON(map[string]any{
+			val.WriteJSON(map[string]any{
 				"type":"connected",
 				"id":id,
 			})

@@ -27,6 +27,9 @@ export let conn
                 }else if (data.type === "Disconneted"){
                     document.getElementById(""+data.id).classList.remove('active')
                 }else if  (data.type === "connected"){
+                    console.log(data);
+                    console.log("hunniniuiduidjuijfiufjujfuifjjfjjfjjffjfjfjjffjfjfjfjfj");
+                    
                     document.getElementById(""+data.id).classList.add('active')
                 }
             } catch (err) {
