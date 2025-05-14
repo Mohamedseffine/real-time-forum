@@ -71,17 +71,21 @@ type User struct {
 	SessionToken string
 }
 
-type Chat struct{}
+type Chat struct {
+	Id       int       `json:"id"`
+	Messages []Message `json:"messages"`
+}
 
 type Message struct {
 	MessageId  int
-	UserId     int
-	ChatId     int
-	Content    string
-	Date       time.Time
-	Username   string
-	Reciever   string
-	RecieverId int
+	UserId     int       `json:"user_id"`
+	ChatId     int       `json:"chat_id"`
+	Content    string    `json:"message"`
+	Dare       time.Time `json:"time"`
+	Type       string    `json:"read_unread"`
+	Username   string    `json:"username"`
+	Reciever   string    `json:"reciever"`
+	RecieverId int       `json:"reciever_id"`
 }
 
 type Error struct {
@@ -89,17 +93,16 @@ type Error struct {
 	ErrorMessage string
 }
 
-
 type WsData struct {
-	Type string `json:"type"`
-	Message string `json:"message"`
-	Users []Infos `json:"users"`
+	Type    string  `json:"type"`
+	Message string  `json:"message"`
+	Users   []Infos `json:"users"`
 }
 
 type Infos struct {
-	Id int `json:"id"`
+	Id       int    `json:"id"`
 	Username string `json:"username"`
-	IsActive int `json:"active"`
+	IsActive int    `json:"active"`
 }
 
 var Users = make(map[int]*websocket.Conn, 24)

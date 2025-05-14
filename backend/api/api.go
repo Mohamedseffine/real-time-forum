@@ -42,4 +42,7 @@ func Multiplexer() {
 	http.HandleFunc("/retrieve_comments", func(w http.ResponseWriter, r *http.Request) {
 		handlers.RetrieveComments(w, r, db)
 	})
+	http.HandleFunc("/get_chat", func(w http.ResponseWriter, r *http.Request) {
+		handlers.GetChatMessages(w, r, db)
+	})
 }
