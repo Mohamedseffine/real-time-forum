@@ -153,7 +153,7 @@ export function updateUserlist(users, id) {
         const userItem = document.createElement('button');
         userItem.className = 'user-item';
         userItem.textContent = user.username;
-        userItem.id=""+user.id;
+        userItem.id="user"+user.id;
         userItem.dataset.userid = user.id; 
 
         if (user.active === 1) {

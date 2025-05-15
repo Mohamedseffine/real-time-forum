@@ -211,7 +211,7 @@ export async function loadPosts() {
                     </form>
                 </div>
             `;
-
+            time = ""
             feed.appendChild(postEl);
             setupComment(post.id);
         }

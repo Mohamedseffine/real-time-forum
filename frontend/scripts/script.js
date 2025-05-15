@@ -22,10 +22,11 @@ export let conn
                 }else if (data.type === "Disconneted"){
                     document.getElementById(""+data.id).classList.remove('active')
                 }else if  (data.type === "connected"){
-                    if (document.getElementById(""+data.id)!=null) {
-                        document.getElementById(""+data.id).classList.add('active')
-                    }else if (document.getElementById(""+data.id)===null){
-                       console.log(data.users);
+                    if (document.getElementById("user"+data.id)!=null) {
+                        console.log(document.getElementById("user"+data.id));
+                        document.getElementById("user"+data.id).classList.add('active')
+                    }else if (document.getElementById("user"+data.id)===null){
+                    //    console.log(data);
                        updateUserlist(data.users, 0)
                     }
                 }
