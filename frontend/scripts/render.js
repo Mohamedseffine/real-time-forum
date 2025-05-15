@@ -187,6 +187,9 @@ export async function loadPosts() {
         feed.innerHTML = '';
 
         for (const post of posts) {
+            let time = ""
+            let seconds = Date.now()-Date.parse(post.creation_time)
+            time = parsetime(seconds)
             const postEl = document.createElement('div');
             postEl.className = 'post-item';
             postEl.innerHTML = `
@@ -195,7 +198,7 @@ export async function loadPosts() {
                 <p class="post-content">${post.content}</p>
                 <div class="post-meta">
                     <span>By <strong>${post.username}</strong></span> |
-                    <span>${new Date(post.creation_time).toLocaleString()}</span>
+                    <span>created ${time} ago</span>
                 </div>
                 <div class="comments-section" data-post-id="${post.id}">
                     <h4>Comments</h4>
@@ -275,4 +278,29 @@ function retrieve_comments(postId, commentsList, noComments) {
         .catch(err => {
             console.error('Error fetching comments:', err);
         });
+}
+
+
+function parsetime(seconds) {
+    if ((seconds/1000)<1) {
+        return "1s"
+    }
+    if ((seconds/1000)>1 && seconds/(1000*60)<1) {
+        return `${Math.floor((seconds/1000))}s`
+    }
+    if (seconds/(1000*60)>=1) {
+        return `${Math.floor(seconds/(1000*60))}min `.concat(parsetime(seconds%(1000*60)))
+    }
+    if (seconds/(1000*60*60)>=1) {
+        return `${Math.floor(seconds/(1000*60*60))}h `.concat(parsetime(seconds%(1000*60*60)))
+    }
+    if (seconds/(1000*60*60*24)>=1) {
+        return `${Math.floor(seconds/(1000*60*60*24))}d `.concat(parsetime(seconds%(1000*60*60*24)))
+    }
+    if (seconds/(1000*60*60*24*7)>=1) {
+        return `${Math.floor(seconds/(1000*60*60*24*7))}w `.concat(parsetime(seconds%(1000*60*60*24*7)))
+    }
+    if (seconds/(1000*60*60*24*7*30)>=1) {
+        return `${Math.floor(seconds/(1000*60*60*24*7*30))}m `.concat(parsetime(seconds%(1000*60*60*24*7*30)))
+    }
 }
