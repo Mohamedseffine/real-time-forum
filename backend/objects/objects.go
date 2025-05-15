@@ -80,7 +80,7 @@ type Message struct {
 	UserId     int       `json:"user_id"`
 	ChatId     int       `json:"chat_id"`
 	Content    string    `json:"message"`
-	Dare       time.Time `json:"time"`
+	Date       time.Time `json:"time"`
 	Type       string    `json:"read_unread"`
 	Username   string    `json:"username"`
 	Reciever   string    `json:"reciever"`
