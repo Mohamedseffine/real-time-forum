@@ -93,9 +93,13 @@ type Error struct {
 }
 
 type WsData struct {
-	Type    string  `json:"type"`
-	Message string  `json:"message"`
-	Users   []Infos `json:"users"`
+	Type              string  `json:"type"`
+	Message           string  `json:"message"`
+	Users             []Infos `json:"users"`
+	UserId            int     `json:"id"`
+	Username          string  `json:"username"`
+	RecieverId        int     `json:"receiver_id"`
+	Reciever_username string  `json:"receiver_username"`
 }
 
 type Infos struct {
@@ -104,4 +108,4 @@ type Infos struct {
 	IsActive int    `json:"active"`
 }
 
-var Users = make(map[int]*websocket.Conn, 24)
+var Users = make(map[int]*websocket.Conn)

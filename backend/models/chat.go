@@ -3,11 +3,13 @@ package models
 import (
 	"database/sql"
 	"rt_forum/backend/objects"
+
+	"github.com/gorilla/websocket"
 )
 
 func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (objects.Chat, error) {
 	var chat objects.Chat
-	stm, err := db.Prepare(`SELECT * FROM messages WHERE sender_id = ? AND reciever_id = ? AND id > ? LIMIT 10`)
+	stm, err := db.Prepare(`SELECT * FROM messages WHERE sender_id = ? AND receiver_id = ? AND id > ? LIMIT 10`)
 	if err != nil {
 		return objects.Chat{}, err
 	}
@@ -21,7 +23,23 @@ func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (obje
 		if err != nil {
 			return objects.Chat{}, err
 		}
-		chat.Messages=append(chat.Messages, message)
+		chat.Messages = append(chat.Messages, message)
 	}
 	return chat, nil
+}
+
+func InsertMessage(db *sql.DB, Data objects.WsData, Conn *websocket.Conn) (int, error) {
+	stm, err := db.Prepare(`INSERT INTO messages (sender_id, receiver_id, content, mtype, sender_username, reciever_username) VALUES (?,?,?,?,?,?)`)
+	if err != nil {
+		return -1, err
+	}
+	res, err := stm.Exec(Data.UserId, Data.RecieverId, Data.Message, "", Data.Username, Data.Reciever_username)
+	if err != nil {
+		return -1, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+	return int(id), nil
 }

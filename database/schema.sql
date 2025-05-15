@@ -97,4 +97,6 @@ CREATE TABLE
         unread_messages INTEGER NOT NULL,
         st_part VARCHAR(50) NOT NULL,
         nd_part VARCHAR(50) NOT NULL
-    )
+    );
+
+PRAGMA foreign_keys = ON

@@ -23,6 +23,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	var data data
+
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")

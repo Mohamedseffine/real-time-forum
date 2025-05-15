@@ -217,13 +217,15 @@ function sendMessage(userId) {
     msgElement.className = 'my-message';
     msgElement.textContent = message;
     messageBox.appendChild(msgElement);
+    let username = document.getElementById("".concat(userId)).textContent
     input.value = '';
     let msg ={
         type : "message",
         message : message,
-        id : localStorage.getItem('id'),
+        id : parseInt(localStorage.getItem('id')),
         username : localStorage.getItem('username'),
-        receiver_id : userId
+        receiver_id : userId,
+        receiver_username :username
     }
     if (conn.readyState === WebSocket.OPEN){
         conn.send(JSON.stringify(msg))

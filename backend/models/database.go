@@ -31,6 +31,7 @@ func DatabaseExec() *sql.DB {
 		fmt.Println(" failed to execute schema:", err)
 		return nil
 	}
+	
 	fmt.Println("ok dazt mzian gng")
 	return database
 }

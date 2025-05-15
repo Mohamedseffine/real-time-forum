@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 
 	"net/http"
 
@@ -32,6 +33,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	id, err := models.InsertPost(db, post)
 	if err != nil {
+		log.Println(err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
