@@ -34,15 +34,16 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	token, err := r.Cookie("token")
 	if err != nil {
 		Conn.WriteJSON(map[string]any{
-			"error": "hbbhhhbbbhbhhbhbhbh",
+			"error": "cookie error",
 		})
 		return
 	}
 	id, err := models.GetId(db, strings.TrimPrefix(token.String(), "token="))
 	defer handleConnClosure(Conn, id)
 	if err != nil {
+		log.Println(err)
 		Conn.WriteJSON(map[string]any{
-			"error": "pppppppppppppppppppppp",
+			"error": "db error ",
 		})
 		return
 	}
