@@ -7,9 +7,9 @@ import (
 	"rt_forum/backend/helpers"
 )
 
-func IsAlreadyLoggedIn(next func(http.ResponseWriter, *http.Request, *sql.DB), db *sql.DB, w http.ResponseWriter, r *http.Request) http.HandlerFunc {
+func IsAlreadyLoggedIn(next func(http.ResponseWriter, *http.Request, *sql.DB), db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !helpers.IsLoggedIn(db, r) {
+		if helpers.IsLoggedIn(db, r) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusForbidden)
 			json.NewEncoder(w).Encode(map[string]string{

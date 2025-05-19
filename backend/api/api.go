@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"rt_forum/backend/handlers"
+	"rt_forum/backend/middleware"
 	"rt_forum/backend/models"
 )
 
@@ -12,10 +13,10 @@ func Multiplexer() {
 	http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleWS(w, r, db)
 	})
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		handlers.HandleRegister(w, r, db)
-	})
-	// http.HandleFunc("/", middleware.IsAlreadyLoggedIn(handlers.HandleRegister, db))
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	handlers.HandleRegister(w, r, db)
+	// })
+	http.HandleFunc("/", middleware.IsAlreadyLoggedIn(handlers.HandleRegister, db))
 	http.HandleFunc("/frontend/", handlers.HandleStatic)
 	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleSignUp(w, r, db)
