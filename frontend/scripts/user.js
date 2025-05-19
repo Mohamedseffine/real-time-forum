@@ -167,7 +167,6 @@ export function updateUserlist(users, id) {
 
         userList.appendChild(userItem);
     });
-    console.log("za");
     
 }
 

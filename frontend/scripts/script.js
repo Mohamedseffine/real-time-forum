@@ -20,7 +20,7 @@ export let conn
                 if (data.type === 'all_users'){
                     updateUserlist(data.users, 0 )
                 }else if (data.type === "Disconneted"){
-                    document.getElementById(""+data.id).classList.remove('active')
+                    document.getElementById("user"+data.id).classList.remove('active')
                 }else if  (data.type === "connected"){
                     if (document.getElementById("user"+data.id)!=null) {
                         console.log(document.getElementById("user"+data.id));

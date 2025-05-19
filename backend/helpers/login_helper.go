@@ -48,18 +48,21 @@ func IsValidEmail(email string) bool {
 
 func IsLoggedIn(db *sql.DB, r *http.Request) bool {
 	token, err := r.Cookie("token")
-	if err != nil {
-		return false
+	if err != nil  {
+		return !(err.Error() == "http: named cookie not present")
 	}
 	tok := strings.TrimPrefix(token.String(), "token=")
+	log.Println(tok)
 	n := models.CheckSession(db, tok)
 	if n != 1 {
-		return false
+		log.Println("jj")
+		return true
 	}
 	expires_at, err := models.IsExpired(db, tok)
 	if err != nil {
-		return false
+		log.Println(err)
+		return true
 	}
 	log.Println(expires_at)
-	return !expires_at.After(time.Now())
+	return time.Now().After(expires_at)
 }
