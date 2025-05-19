@@ -184,6 +184,6 @@ func IsExpired(db *sql.DB, token string) (time.Time, error) {
 	if err != nil {
 		return expires_at, err
 	}
-	err = stm.QueryRow(token).Scan(expires_at)
+	err = stm.QueryRow(token).Scan(&expires_at)
 	return expires_at, err
 }
