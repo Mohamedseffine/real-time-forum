@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"rt_forum/backend/objects"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (objects.Chat, error) {
@@ -29,7 +27,7 @@ func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (obje
 	return chat, nil
 }
 
-func InsertMessage(db *sql.DB, Data objects.WsData, Conn *websocket.Conn) (int, error) {
+func InsertMessage(db *sql.DB, Data objects.WsData) (int, error) {
 	stm, err := db.Prepare(`INSERT INTO messages (sender_id, receiver_id, content, mtype, recieved_at, sender_username, reciever_username) VALUES (?,?,?,?,?,?,?)`)
 	if err != nil {
 		return -1, err

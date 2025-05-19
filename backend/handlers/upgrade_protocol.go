@@ -9,6 +9,7 @@ import (
 	"rt_forum/backend/objects"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -89,14 +90,9 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			})
 			return
 		}
-		if len(objects.Users) > 1 {
-			for _, val := range objects.Users {
-				if val != Conn {
-					val.WriteJSON(map[string]any{
-						"message": message,
-					})
-				}
-			}
+		if message.Type == "message"{
+			models.InsertMessage(db, message)
+			SendMessage(message)
 		}
 	}
 
@@ -128,5 +124,19 @@ func updateLoginState(Conn *websocket.Conn, id int, users []objects.Infos)  {
 				"users":users,
 			})
 		}
+	}
+}
+
+
+func SendMessage(message objects.WsData){
+	if Conn:=objects.Users[message.RecieverId];Conn!=nil {
+		Conn.WriteJSON(map[string]any{
+			"type":message.Type,
+			"sender_id":message.UserId,
+			"sender_username":message.Username,
+			"content":message.Message,
+			"time":time.Now(),
+			"status":"unread",
+		})
 	}
 }
