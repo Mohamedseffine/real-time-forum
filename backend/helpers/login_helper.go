@@ -2,9 +2,11 @@ package helpers
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"rt_forum/backend/models"
 )
@@ -49,7 +51,15 @@ func IsLoggedIn(db *sql.DB, r *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	n := models.CheckSession(db, strings.TrimPrefix(token.String(), "token="))
-	return n == 1 
-	
+	tok := strings.TrimPrefix(token.String(), "token=")
+	n := models.CheckSession(db, tok)
+	if n != 1 {
+		return false
+	}
+	expires_at, err := models.IsExpired(db, tok)
+	if err != nil {
+		return false
+	}
+	log.Println(expires_at)
+	return !expires_at.After(time.Now())
 }

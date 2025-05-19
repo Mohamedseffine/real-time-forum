@@ -116,6 +116,7 @@ func CheckSession(db *sql.DB, token string) int {
 		log.Println("1", err)
 		return -1
 	}
+
 	return n
 }
 
@@ -174,4 +175,15 @@ func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+
+func IsExpired(db *sql.DB, token string) (time.Time, error) {
+	stm, err:= db.Prepare(`SELECT expires_at FROM sessions WHERE token = ?`)
+	var expires_at time.Time
+	if err != nil {
+		return expires_at, err
+	}
+	err = stm.QueryRow(token).Scan(expires_at)
+	return expires_at, err
 }
