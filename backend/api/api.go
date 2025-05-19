@@ -17,7 +17,9 @@ func Multiplexer() {
 	// 	handlers.HandleRegister(w, r, db)
 	// })
 	http.HandleFunc("/", middleware.IsAlreadyLoggedIn(handlers.HandleRegister, db))
+
 	http.HandleFunc("/frontend/", handlers.HandleStatic)
+
 	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleSignUp(w, r, db)
 	})
