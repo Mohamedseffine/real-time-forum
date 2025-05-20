@@ -76,7 +76,7 @@ type Chat struct {
 }
 
 type Message struct {
-	MessageId  int
+	MessageId  int       `json:"id"`
 	UserId     int       `json:"user_id"`
 	Content    string    `json:"message"`
 	Date       time.Time `json:"time"`
@@ -99,6 +99,7 @@ type WsData struct {
 	Username          string  `json:"username"`
 	RecieverId        int     `json:"receiver_id"`
 	Reciever_username string  `json:"receiver_username"`
+	Status            string  `json:"status"`
 }
 
 type Infos struct {

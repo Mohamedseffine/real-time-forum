@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"rt_forum/backend/models"
+	"rt_forum/backend/objects"
 )
 
 type data struct {
@@ -34,19 +35,31 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 		return
 	}
-	messages, err := models.GetChat(db, data.Sender_id, data.Reciever_id, data.LastInsertId)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"error": "database error",
-		})
-		return
+	var messages objects.Chat
+	if data.LastInsertId != 0 {
+		messages, err = models.GetChat(db, data.Sender_id, data.Reciever_id, data.LastInsertId)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]any{
+				"error": "database error",
+			})
+			return
+		}
+	}else {
+		messages, err = models.GetBaseChat(db, data.Sender_id, data.Reciever_id)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]any{
+				"error": "database error",
+			})
+			return
+		}
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode( messages)
+	err = json.NewEncoder(w).Encode(messages)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

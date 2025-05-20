@@ -81,5 +81,4 @@ CREATE TABLE IF NOT EXISTS chats (
     st_part VARCHAR(50) NOT NULL,
     nd_part VARCHAR(50) NOT NULL
 );
-PRAGMA foreign_keys = ON;
-PRAGMA journal_mode = WAL
+PRAGMA foreign_keys = ON

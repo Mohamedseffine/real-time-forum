@@ -90,8 +90,13 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			return
 		}
 		if message.Type == "message" {
-			models.InsertMessage(db, message)
-			SendMessage(message)
+			id, err := models.InsertMessage(db, message)
+			if err != nil {
+				Conn.WriteJSON(map[string]any{
+					"error": err.Error(),
+				})
+			}
+			SendMessage(message, id)
 		}
 	}
 
@@ -124,10 +129,11 @@ func updateLoginState(Conn *websocket.Conn, id int, users []objects.Infos) {
 	}
 }
 
-func SendMessage(message objects.WsData) {
+func SendMessage(message objects.WsData, id int) {
 	if Conn := objects.Users[message.RecieverId]; Conn != nil {
 		Conn.WriteJSON(map[string]any{
 			"type":            message.Type,
+			"id":              id,
 			"sender_id":       message.UserId,
 			"sender_username": message.Username,
 			"content":         message.Message,
