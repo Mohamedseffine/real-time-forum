@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"rt_forum/backend/models"
 )
 
 type data struct {
 	Sender_id    int `json:"sender_id"`
-	Reciever_id  int `json:"reciever_id"`
+	Reciever_id  int `json:"receiver_id"`
 	LastInsertId int `json:"last_id"`
 }
 
@@ -35,6 +36,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		// fmt.Println("lwala")
 		return
 	}
+	log.Println(data)
 	messages, err := models.GetChat(db, data.Sender_id, data.Reciever_id, data.LastInsertId)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -42,7 +44,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": "database error",
 		})
-				fmt.Println(err)
+		fmt.Println(err)
 
 		return
 	}
@@ -56,7 +58,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": "sending data error",
 		})
-				// fmt.Println("talta")
+		// fmt.Println("talta")
 
 		return
 	}
