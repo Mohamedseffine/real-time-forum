@@ -3,7 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
+
 	"net/http"
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
@@ -31,7 +31,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	
+
 	token, err := r.Cookie("token")
 	if err != nil {
 		Conn.WriteJSON(map[string]any{
@@ -42,7 +42,6 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id, err := models.GetId(db, strings.TrimPrefix(token.String(), "token="))
 	defer handleConnClosure(Conn, id)
 	if err != nil {
-		log.Println(err)
 		Conn.WriteJSON(map[string]any{
 			"error": "db error ",
 		})
@@ -51,13 +50,13 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	mu.Lock()
 	objects.Users[id] = Conn
 	mu.Unlock()
-	
+
 	if len(objects.Users) > 1 {
 		for _, val := range objects.Users {
 			if val != Conn {
 				Conn.WriteJSON(map[string]any{
-					"type":"connected",
-					"id":id,
+					"type": "connected",
+					"id":   id,
 				})
 			}
 		}
@@ -72,7 +71,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	for i := range users {
 		if objects.Users[users[i].Id] != nil {
-			
+
 			users[i].IsActive = 1
 		}
 	}
@@ -90,7 +89,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			})
 			return
 		}
-		if message.Type == "message"{
+		if message.Type == "message" {
 			models.InsertMessage(db, message)
 			SendMessage(message)
 		}
@@ -113,30 +112,27 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 	}
 }
 
-
-func updateLoginState(Conn *websocket.Conn, id int, users []objects.Infos)  {
-	log.Println(objects.Users)
+func updateLoginState(Conn *websocket.Conn, id int, users []objects.Infos) {
 	for _, val := range objects.Users {
 		if val != Conn {
 			val.WriteJSON(map[string]any{
-				"type":"connected",
-				"id":id,
-				"users":users,
+				"type":  "connected",
+				"id":    id,
+				"users": users,
 			})
 		}
 	}
 }
 
-
-func SendMessage(message objects.WsData){
-	if Conn:=objects.Users[message.RecieverId];Conn!=nil {
+func SendMessage(message objects.WsData) {
+	if Conn := objects.Users[message.RecieverId]; Conn != nil {
 		Conn.WriteJSON(map[string]any{
-			"type":message.Type,
-			"sender_id":message.UserId,
-			"sender_username":message.Username,
-			"content":message.Message,
-			"time":time.Now(),
-			"status":"unread",
+			"type":            message.Type,
+			"sender_id":       message.UserId,
+			"sender_username": message.Username,
+			"content":         message.Message,
+			"time":            time.Now(),
+			"status":          "unread",
 		})
 	}
 }

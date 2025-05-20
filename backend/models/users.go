@@ -2,12 +2,10 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
-	"html"
-	"log"
-	"time"
 
+	"html"
 	"rt_forum/backend/objects"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -39,7 +37,6 @@ func ExtractUser(db *sql.DB, password string, log string, typ string) (int, stri
 	}
 	stm, err := db.Prepare(query)
 	if err != nil {
-		fmt.Println(err)
 		return -1, "", "database error"
 	}
 	defer stm.Close()
@@ -108,12 +105,10 @@ func CheckSession(db *sql.DB, token string) int {
 	var n int
 	stm, err := db.Prepare(`SELECT COUNT(*) FROM sessions WHERE token = ?`)
 	if err != nil {
-		log.Println("1", err)
 		return -1
 	}
 	err = stm.QueryRow(token).Scan(&n)
 	if err != nil {
-		log.Println("1", err)
 		return -1
 	}
 
@@ -138,7 +133,7 @@ func DeleteSession(db *sql.DB, session string) error {
 	if err != nil {
 		return err
 	}
-	log.Println(session)
+
 	_, err = stm.Exec(session)
 	return err
 }
@@ -177,9 +172,8 @@ func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
 	return users, nil
 }
 
-
 func IsExpired(db *sql.DB, token string) (time.Time, error) {
-	stm, err:= db.Prepare(`SELECT expires_at FROM sessions WHERE token = ?`)
+	stm, err := db.Prepare(`SELECT expires_at FROM sessions WHERE token = ?`)
 	var expires_at time.Time
 	if err != nil {
 		return expires_at, err

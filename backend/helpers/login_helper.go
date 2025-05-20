@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"database/sql"
-	"log"
+
 	"net/http"
 	"regexp"
 	"strings"
@@ -48,21 +48,18 @@ func IsValidEmail(email string) bool {
 
 func IsLoggedIn(db *sql.DB, r *http.Request) bool {
 	token, err := r.Cookie("token")
-	if err != nil  {
+	if err != nil {
 		return !(err.Error() == "http: named cookie not present")
 	}
 	tok := strings.TrimPrefix(token.String(), "token=")
-	log.Println(tok)
 	n := models.CheckSession(db, tok)
 	if n != 1 {
-		log.Println("jj")
 		return true
 	}
 	expires_at, err := models.IsExpired(db, tok)
 	if err != nil {
-		log.Println(err)
+
 		return true
 	}
-	log.Println(expires_at)
 	return time.Now().After(expires_at)
 }

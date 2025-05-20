@@ -263,13 +263,11 @@ export async function getMessages(senderId, receiverId) {
         if (!res.ok) { throw new Error("Failed to fetch messages"); }
 
         const messages = await res.json();
-        console.log(JSON.stringify(messages))
-
         const box = document.getElementById(`chat-${receiverId}`);
         if (!box) { return; }  
-        console.log(messages);
+        console.log( messages["messages"]);
         
-        messages.forEach(msg => {
+        messages["messages"].forEach(msg => {
             const div  = document.createElement('div');
             const mine = msg.sender_id === senderId;
             div.className = mine ? "my-message" : "their-message";

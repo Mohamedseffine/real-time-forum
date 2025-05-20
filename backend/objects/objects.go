@@ -78,7 +78,6 @@ type Chat struct {
 type Message struct {
 	MessageId  int
 	UserId     int       `json:"user_id"`
-	ChatId     int       `json:"chat_id"`
 	Content    string    `json:"message"`
 	Date       time.Time `json:"time"`
 	Type       string    `json:"read_unread"`
