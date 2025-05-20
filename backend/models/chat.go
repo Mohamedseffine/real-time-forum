@@ -2,24 +2,29 @@ package models
 
 import (
 	"database/sql"
-	"rt_forum/backend/objects"
 	"time"
+
+	"rt_forum/backend/objects"
 )
 
 func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (objects.Chat, error) {
 	var chat objects.Chat
-	stm, err := db.Prepare(`SELECT * FROM messages WHERE sender_id = ? AND receiver_id = ? AND id < ?  ORDER BY creation_date DESC LIMIT 10`)
+	stm, err := db.Prepare(`SELECT * FROM messages WHERE sender_id = ? AND receiver_id = ? AND id < ?  ORDER BY recieved_at DESC LIMIT 10`)
 	if err != nil {
 		return objects.Chat{}, err
 	}
 	rows, err := stm.Query(senderId, recieverId, lastInsertedId)
 	if err != nil {
+		// fmt.Println("tania")
+
 		return objects.Chat{}, err
 	}
 	for rows.Next() {
 		var message objects.Message
 		err = rows.Scan(&message.MessageId, &message.UserId, &message.RecieverId, &message.Content, &message.Type, &message.Date, &message.Username, &message.Reciever)
 		if err != nil {
+			// fmt.Println("talta")
+
 			return objects.Chat{}, err
 		}
 		chat.Messages = append(chat.Messages, message)

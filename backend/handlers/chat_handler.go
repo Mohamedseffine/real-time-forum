@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"rt_forum/backend/models"
 )
@@ -14,7 +15,7 @@ type data struct {
 }
 
 func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(map[string]any{
@@ -31,6 +32,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": "can not read json data",
 		})
+		// fmt.Println("lwala")
 		return
 	}
 	messages, err := models.GetChat(db, data.Sender_id, data.Reciever_id, data.LastInsertId)
@@ -40,8 +42,11 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": "database error",
 		})
+				fmt.Println(err)
+
 		return
 	}
+	fmt.Println(messages)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(messages)
@@ -51,6 +56,8 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": "sending data error",
 		})
+				// fmt.Println("talta")
+
 		return
 	}
 }

@@ -217,7 +217,7 @@ function sendMessage(userId) {
     msgElement.textContent = message;
     messageBox.appendChild(msgElement);
     let username = document.getElementById("user".concat(userId)).textContent
-    console.log(username)
+    // console.log(username)
     input.value = '';
     let msg ={
         type : "message",
@@ -228,15 +228,60 @@ function sendMessage(userId) {
         receiver_username :username
     }
     if (conn.readyState === WebSocket.OPEN){
+        getMessages(parseInt(localStorage.getItem('id')) , msg.reciever_id)
         conn.send(JSON.stringify(msg))
-        console.log(JSON.stringify(msg));
+        // console.log(JSON.stringify(msg));
         
-        console.log("dkhlat hna");
+        // console.log("dkhlat hna");
     }else{
         console.log("websocket not open");
         
     }
-    
-   
+}
 
+export async function getMessages(senderId, receiverId, lastId = null, limit = 10) {
+    const payload = {
+        sender_id:  senderId,
+        receiver_id: receiverId,
+        limit:       limit              // ask server for n most-recent messages
+    };
+    if (lastId !== null) {
+        payload.last_id = lastId;       // page backwards when you have older msgs
+    }
+
+    try {
+        const res = await fetch("/get_chat", {
+            method:  "POST",
+            headers: {
+                "Content-Type":  "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) { throw new Error("Failed to fetch messages"); }
+
+        const messages = await res.json();
+        console.log(JSON.stringify(messages))
+
+        const box = document.getElementById(`chat-${receiverId}`);
+        if (!box) { return; }  
+
+        // Render (prepend) so newest ends at the bottom.
+        messages.forEach(msg => {
+            const div  = document.createElement('div');
+            const mine = msg.sender_id === senderId;
+            div.className = mine ? "my-message" : "their-message";
+            div.textContent = msg.message;
+            box.prepend(div);
+        });
+
+        // Hand back the earliest message-id so caller can request the
+        // previous page next time (useful for infinite scroll).
+        return messages.length ? messages[0].id : null;
+
+    } catch (err) {
+        console.error("getMessages error:", err);
+        alert(err.message);
+    }
 }
