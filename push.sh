@@ -1,4 +1,3 @@
-rm -rf database/database.db
 rm -rf database/database.db-shm
 rm -rf database/database.db-wal
 git add .
