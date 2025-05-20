@@ -1,6 +1,6 @@
 import { showAuthFormSignup, createBaseLayout } from "./render.js";
 import {updateUserlist}from "./user.js"
- var userlist
+
 // Initialize WebSocket connection
 export let conn
  export function initializeWebSocket() {
