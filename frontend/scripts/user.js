@@ -216,7 +216,8 @@ function sendMessage(userId) {
     msgElement.className = 'my-message';
     msgElement.textContent = message;
     messageBox.appendChild(msgElement);
-    let username = document.getElementById("".concat(userId)).textContent
+    let username = document.getElementById("user".concat(userId)).textContent
+    console.log(username)
     input.value = '';
     let msg ={
         type : "message",
@@ -228,6 +229,8 @@ function sendMessage(userId) {
     }
     if (conn.readyState === WebSocket.OPEN){
         conn.send(JSON.stringify(msg))
+        console.log(JSON.stringify(msg));
+        
         console.log("dkhlat hna");
     }else{
         console.log("websocket not open");
