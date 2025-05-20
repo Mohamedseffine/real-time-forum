@@ -227,8 +227,9 @@ function sendMessage(userId) {
         receiver_id : userId,
         receiver_username :username
     }
+    // console.log(msg.receiver_id)
     if (conn.readyState === WebSocket.OPEN){
-        getMessages(parseInt(localStorage.getItem('id')) , msg.reciever_id)
+        getMessages(parseInt(localStorage.getItem('id')) , msg.receiver_id)
         conn.send(JSON.stringify(msg))
         // console.log(JSON.stringify(msg));
         
@@ -239,16 +240,16 @@ function sendMessage(userId) {
     }
 }
 
-export async function getMessages(senderId, receiverId, lastId = null, limit = 10) {
+export async function getMessages(senderId, receiverId) {
     const payload = {
         sender_id:  senderId,
         receiver_id: receiverId,
-        limit:       limit              // ask server for n most-recent messages
+        last_id:       10              // ask server for n most-recent messages
     };
-    if (lastId !== null) {
-        payload.last_id = lastId;       // page backwards when you have older msgs
-    }
-
+    // if (lastId !== null) {
+    //     payload.last_id = lastId;       // page backwards when you have older msgs
+    // }
+    // console.log(payload)
     try {
         const res = await fetch("/get_chat", {
             method:  "POST",
@@ -266,8 +267,8 @@ export async function getMessages(senderId, receiverId, lastId = null, limit = 1
 
         const box = document.getElementById(`chat-${receiverId}`);
         if (!box) { return; }  
-
-        // Render (prepend) so newest ends at the bottom.
+        console.log(messages);
+        
         messages.forEach(msg => {
             const div  = document.createElement('div');
             const mine = msg.sender_id === senderId;
