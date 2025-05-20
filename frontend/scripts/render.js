@@ -143,11 +143,6 @@ function setupPostCreation() {
             content,
             categories: selectedCategories
         };
-        // if (document.cookie && document.cookie !== "") {
-        //     console.log("There are cookies!");
-        // } else {
-        //     console.log("No cookies found.");
-        // }
 
         try {
             const res = await fetch('/create_post', {

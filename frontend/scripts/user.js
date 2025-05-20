@@ -1,5 +1,6 @@
 import { createBaseLayout, showAuthFormLogin } from "./render.js";
 import { conn } from "./script.js";
+var LaStInsertedId = 0
 export async function sendlogindata(username, password) {
   const type = username.includes("@") ? "email" : "username";
   const authData = {
@@ -171,8 +172,9 @@ export function updateUserlist(users, id) {
 
     // Attach event to open chat
     userItem.addEventListener("click", () => {
-      getMessages(parseInt(localStorage.getItem("id")), user.id, 0);
+      userItem.innerText = userItem.innerText.replace("💡", "");
       openChatWithUser(user);
+      LaStInsertedId = getMessages(parseInt(localStorage.getItem("id")), user.id, LaStInsertedId);
     });
 
     userList.appendChild(userItem);
@@ -224,7 +226,9 @@ function sendMessage(userId) {
   msgElement.className = "my-message";
   msgElement.textContent = message;
   messageBox.appendChild(msgElement);
-  let username = document.getElementById("user".concat(userId)).textContent.replace("💡", "");
+  let username = document
+    .getElementById("user".concat(userId))
+    .textContent.replace("💡", "");
   // console.log(username)
   input.value = "";
   let msg = {
@@ -248,13 +252,14 @@ function sendMessage(userId) {
 }
 
 export async function getMessages(senderId, receiverId, lastID) {
+
   const payload = {
     sender_id: senderId,
     receiver_id: receiverId,
     last_id: 0, // ask server for n most-recent messages
   };
   if (lastID !== null) {
-      payload.last_id = lastID;       // page backwards when you have older msgs
+    payload.last_id = lastID; // page backwards when you have older msgs
   }
 
   try {
@@ -282,18 +287,20 @@ export async function getMessages(senderId, receiverId, lastID) {
 
         const div = document.createElement("div");
         const mine = msg.user_id === senderId;
-        div.id="msg"+msg.id
+        div.id = "msg" + msg.id;
         div.className = mine ? "my-message" : "their-message";
         div.textContent = msg.message;
         box.prepend(div);
       });
     }
-
+    
     // Hand back the earliest message-id so caller can request the
     // previous page next time (useful for infinite scroll).
-    return messages.length ? messages[0].id : null;
+    return messages['messages'].length ==10 ? messages['messages'][messages['messages'].length-1].id : null;
   } catch (err) {
     console.error("getMessages error:", err);
     alert(err.message);
   }
 }
+
+function LoadMore(evt, id) {}

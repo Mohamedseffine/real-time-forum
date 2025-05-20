@@ -75,5 +75,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		"id":       id,
 		"username":userdata.Username,
 		"token":    token.String(),
+		"unread_mess":[]int{},
 	})
 }
