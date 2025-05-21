@@ -294,7 +294,7 @@ function retrieve_comments(postId, commentsList, noComments) {
     });
 }
 
-function parsetime(seconds) {
+export function parsetime(seconds) {
     if (seconds / (1000 * 60 * 60 * 24 * 365) >= 1) {
     return `${Math.floor(seconds / (1000 * 60 * 60 * 24 * 365))}y `.concat(
       parsetime(seconds % (1000 * 60 * 60 * 24 * 7 * 30))
