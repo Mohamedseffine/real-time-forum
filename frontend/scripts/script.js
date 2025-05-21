@@ -85,3 +85,5 @@ function AppendMessage(message, id, sender_id) {
   div.textContent = message;
   box.append(div);
 }
+
+

@@ -1,6 +1,6 @@
 import { createBaseLayout, showAuthFormLogin } from "./render.js";
 import { conn } from "./script.js";
-var LaStInsertedId = 0
+var LaStInsertedId = 0;
 export async function sendlogindata(username, password) {
   const type = username.includes("@") ? "email" : "username";
   const authData = {
@@ -171,10 +171,17 @@ export function updateUserlist(users, id) {
     }
 
     // Attach event to open chat
-    userItem.addEventListener("click", () => {
+    userItem.addEventListener("click", async () => {
+      LaStInsertedId = 0;
       userItem.innerText = userItem.innerText.replace("💡", "");
       openChatWithUser(user);
-      LaStInsertedId = getMessages(parseInt(localStorage.getItem("id")), user.id, LaStInsertedId);
+      LaStInsertedId = await getMessages(
+        parseInt(localStorage.getItem("id")),
+        user.id,
+        LaStInsertedId
+      );
+      console.log('jjjjjjjjjjjjjjjj');
+      
     });
 
     userList.appendChild(userItem);
@@ -183,6 +190,8 @@ export function updateUserlist(users, id) {
 
 // Example placeholder function to open chat (implement your chat logic here)
 function openChatWithUser(user) {
+  console.log("last id", LaStInsertedId);
+
   let chatArea = document.querySelector(".chat-area");
 
   // If it already exists, remove it before creating a new one
@@ -198,7 +207,9 @@ function openChatWithUser(user) {
             Chat with ${user.username}
             <button class="close-chat-btn">✖</button>
         </div>
-        <div class="chat-messages" id="chat-${user.id}"></div>
+        <div class="chat-messages" id="chat-${user.id}">
+        
+        </div>
         <input type="text" class="chat-input" placeholder="Type a message...">
         <button class="send-btn">Send</button>
     `;
@@ -207,6 +218,7 @@ function openChatWithUser(user) {
 
   const closeBtn = chatArea.querySelector(".close-chat-btn");
   closeBtn.addEventListener("click", () => {
+    LaStInsertedId = 0;
     chatArea.remove();
   });
 
@@ -229,7 +241,6 @@ function sendMessage(userId) {
   let username = document
     .getElementById("user".concat(userId))
     .textContent.replace("💡", "");
-  // console.log(username)
   input.value = "";
   let msg = {
     type: "message",
@@ -240,19 +251,17 @@ function sendMessage(userId) {
     receiver_username: username,
     status: "unread",
   };
-  // console.log(msg.receiver_id)
   if (conn.readyState === WebSocket.OPEN) {
     conn.send(JSON.stringify(msg));
-    // console.log(JSON.stringify(msg));
-
-    // console.log("dkhlat hna");
   } else {
     console.log("websocket not open");
   }
 }
 
 export async function getMessages(senderId, receiverId, lastID) {
-
+  if (lastID === null) {
+    return null;
+  }
   const payload = {
     sender_id: senderId,
     receiver_id: receiverId,
@@ -279,28 +288,41 @@ export async function getMessages(senderId, receiverId, lastID) {
     const messages = await res.json();
     const box = document.getElementById(`chat-${receiverId}`);
     if (!box) {
-      return;
+      return null;
     }
-    if (messages["messages"] != null) {
-      messages["messages"].forEach((msg) => {
-        console.log("wach a frida");
+    if (messages["messages"] === null) {
+      return null;
+    }
+    messages["messages"].forEach((msg) => {
+      const div = document.createElement("div");
+      const mine = msg.user_id === senderId;
+      div.id = "msg" + msg.id;
+      div.className = mine ? "my-message" : "their-message";
+      div.textContent = msg.message;
+      box.prepend(div);
+    });
+    const sp = document.createElement("span");
+    sp.id = "scroll-span";
+    sp.style.display = "none";
+    box.prepend(sp);
 
-        const div = document.createElement("div");
-        const mine = msg.user_id === senderId;
-        div.id = "msg" + msg.id;
-        div.className = mine ? "my-message" : "their-message";
-        div.textContent = msg.message;
-        box.prepend(div);
-      });
-    }
-    
+    const scroll = document.getElementById("scroll-span");
+    scroll.addEventListener("scrollend", async (evt) => {
+      await LoadMore(evt, user.id);
+    });
+
     // Hand back the earliest message-id so caller can request the
     // previous page next time (useful for infinite scroll).
-    return messages['messages'].length ==10 ? messages['messages'][messages['messages'].length-1].id : null;
+    return messages["messages"].length == 10
+      ? messages["messages"][messages["messages"].length - 1].id
+      : null;
   } catch (err) {
     console.error("getMessages error:", err);
     alert(err.message);
   }
 }
 
-function LoadMore(evt, id) {}
+async function LoadMore(evt, id) {
+  console.log(id);
+  
+}
