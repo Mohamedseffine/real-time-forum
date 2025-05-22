@@ -31,7 +31,7 @@ export function initializeWebSocket() {
           }
         } else if (data.type === "message") {
           let sender = document.getElementById("user".concat(data.sender_id));
-          if (!sender.textContent.includes("💡")) {
+          if (!sender.textContent.includes("💡") && document.getElementById(`chat-${data.sender_id}`) === null) {
             sender.textContent = sender.textContent + "💡";
           }
           let chat_area = document.getElementsByClassName(

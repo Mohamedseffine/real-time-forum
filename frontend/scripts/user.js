@@ -215,7 +215,7 @@ function openChatWithUser(user) {
     `;
 
   document.body.appendChild(chatArea);
-
+  
   const closeBtn = chatArea.querySelector(".close-chat-btn");
   closeBtn.addEventListener("click", () => {
     LaStInsertedId = 0;
@@ -225,6 +225,17 @@ function openChatWithUser(user) {
   const sendBtn = chatArea.querySelector(".send-btn");
   sendBtn.addEventListener("click", () => {
     sendMessage(user.id);
+  });
+
+  const cont = document.getElementById(`chat-${user.id}`);
+  cont.addEventListener("scrollend", async()=>{
+    const { scrollTop } = cont;
+
+    if (scrollTop === 0) {
+      console.log(LaStInsertedId);
+      LaStInsertedId = await getMessages(parseInt(localStorage.getItem("id")), user.id, LaStInsertedId)
+      
+    }
   });
 }
 
@@ -265,11 +276,9 @@ export async function getMessages(senderId, receiverId, lastID) {
   const payload = {
     sender_id: senderId,
     receiver_id: receiverId,
-    last_id: 0, // ask server for n most-recent messages
+    last_id: lastID, // ask server for n most-recent messages
   };
-  if (lastID !== null) {
-    payload.last_id = lastID; // page backwards when you have older msgs
-  }
+  
 
   try {
     const res = await fetch("/get_chat", {
@@ -286,10 +295,16 @@ export async function getMessages(senderId, receiverId, lastID) {
     }
 
     const messages = await res.json();
+
+    
     const box = document.getElementById(`chat-${receiverId}`);
+    console.log(box);
+    
     if (!box) {
       return null;
     }
+    console.log(messages["messages"]);
+
     if (messages["messages"] === null) {
       return null;
     }
@@ -301,16 +316,8 @@ export async function getMessages(senderId, receiverId, lastID) {
       div.textContent = msg.message;
       box.prepend(div);
     });
-    const sp = document.createElement("span");
-    sp.id = "scroll-span";
-    sp.style.display = "none";
-    box.prepend(sp);
 
-    const scroll = document.getElementById("scroll-span");
-    scroll.addEventListener("scrollend", async (evt) => {
-      await LoadMore(evt, user.id);
-    });
-
+    box.scrollTop = box.scrollHeight;
     // Hand back the earliest message-id so caller can request the
     // previous page next time (useful for infinite scroll).
     return messages["messages"].length == 10
@@ -322,7 +329,4 @@ export async function getMessages(senderId, receiverId, lastID) {
   }
 }
 
-async function LoadMore(evt, id) {
-  console.log(id);
-  
-}
+

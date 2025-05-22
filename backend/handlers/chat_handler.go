@@ -46,7 +46,7 @@ func GetChatMessages(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			})
 			return
 		}
-	}else {
+	} else {
 		messages, err = models.GetBaseChat(db, data.Sender_id, data.Reciever_id)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
