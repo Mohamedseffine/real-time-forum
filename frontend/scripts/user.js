@@ -50,7 +50,7 @@ export async function sendAuthData(
     email: email,
     username: username,
     password: password,
-    age:parseInt(age),
+    age: parseInt(age),
   };
 
   try {
@@ -98,6 +98,7 @@ export async function setupLogoutButton() {
         localStorage.removeItem("id");
         localStorage.removeItem("username");
         conn.close();
+        document.body.innerHTML = `<div id="root"></div>`
         showAuthFormLogin();
       }
     } catch {
@@ -148,7 +149,7 @@ export function setupComment(postId, commentsList, noCommentsEl) {
 }
 export function updateUserlist(users, id) {
   console.log(users);
-  
+
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
 
@@ -215,7 +216,7 @@ function openChatWithUser(user) {
     `;
 
   document.body.appendChild(chatArea);
-  
+
   const closeBtn = chatArea.querySelector(".close-chat-btn");
   closeBtn.addEventListener("click", () => {
     LaStInsertedId = 0;
@@ -228,13 +229,16 @@ function openChatWithUser(user) {
   });
 
   const cont = document.getElementById(`chat-${user.id}`);
-  cont.addEventListener("scrollend", async()=>{
+  cont.addEventListener("scrollend", async () => {
     const { scrollTop } = cont;
 
     if (scrollTop === 0) {
       console.log(LaStInsertedId);
-      LaStInsertedId = await getMessages(parseInt(localStorage.getItem("id")), user.id, LaStInsertedId)
-      
+      LaStInsertedId = await getMessages(
+        parseInt(localStorage.getItem("id")),
+        user.id,
+        LaStInsertedId
+      );
     }
   });
 }
@@ -248,6 +252,16 @@ function sendMessage(userId) {
   const msgElement = document.createElement("div");
   msgElement.className = "my-message";
   msgElement.textContent = message;
+  const time = document.createElement("h5");
+  let when = new Date(Date.now());
+  when = when.toUTCString();
+  time.id = "time-span";
+  time.innerHTML = `${
+    localStorage.getItem("username")
+  } At ${when}`;
+  const br = document.createElement("div");
+  time.append(br);
+  msgElement.prepend(time)
   messageBox.appendChild(msgElement);
   let username = document
     .getElementById("user".concat(userId))
@@ -278,7 +292,6 @@ export async function getMessages(senderId, receiverId, lastID) {
     receiver_id: receiverId,
     last_id: lastID, // ask server for n most-recent messages
   };
-  
 
   try {
     const res = await fetch("/get_chat", {
@@ -296,10 +309,9 @@ export async function getMessages(senderId, receiverId, lastID) {
 
     const messages = await res.json();
 
-    
     const box = document.getElementById(`chat-${receiverId}`);
     console.log(box);
-    
+
     if (!box) {
       return null;
     }
@@ -314,14 +326,16 @@ export async function getMessages(senderId, receiverId, lastID) {
       div.id = "msg" + msg.id;
       div.className = mine ? "my-message" : "their-message";
       div.textContent = msg.message;
-      const time = document.createElement('h5')
-      let when = new Date( Date.parse(msg.time))
-      when = when.toUTCString()
-      time.id = "time-span"
-      time.innerHTML =`${mine?localStorage.getItem("username"):msg.username} At ${when}`
-      const br = document.createElement('div')
-      time.append(br)
-      div.prepend(time)
+      const time = document.createElement("h5");
+      let when = new Date(Date.parse(msg.time));
+      when = when.toUTCString();
+      time.id = "time-span";
+      time.innerHTML = `${
+        mine ? localStorage.getItem("username") : msg.username
+      } At ${when}`;
+      const br = document.createElement("div");
+      time.append(br);
+      div.prepend(time);
       box.prepend(div);
     });
 
@@ -336,5 +350,3 @@ export async function getMessages(senderId, receiverId, lastID) {
     alert(err.message);
   }
 }
-
-

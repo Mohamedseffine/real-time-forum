@@ -31,14 +31,22 @@ export function initializeWebSocket() {
           }
         } else if (data.type === "message") {
           let sender = document.getElementById("user".concat(data.sender_id));
-          if (!sender.textContent.includes("💡") && document.getElementById(`chat-${data.sender_id}`) === null) {
+          if (
+            !sender.textContent.includes("💡") &&
+            document.getElementById(`chat-${data.sender_id}`) === null
+          ) {
             sender.textContent = sender.textContent + "💡";
           }
           let chat_area = document.getElementsByClassName(
             `chat-area${data.sender_id}`
           );
           if (chat_area != null) {
-            AppendMessage(data.content, data.id, data.sender_id)
+            AppendMessage(
+              data.content,
+              data.id,
+              data.sender_id,
+              data.sender_username
+            );
           }
         }
       } catch (err) {
@@ -74,16 +82,22 @@ export function formatDateFromTimestamp(ms) {
   return date.toISOString();
 }
 
-function AppendMessage(message, id, sender_id) {
+function AppendMessage(message, id, sender_id, sender_username) {
   const box = document.getElementById(`chat-${sender_id}`);
   if (!box) {
     return;
   }
   const div = document.createElement("div");
+  const time = document.createElement("h5");
+  let when = new Date(Date.now());
+  when = when.toUTCString();
+  time.id = "time-span";
+  time.innerHTML = `${sender_username} At ${when}`;
+  const br = document.createElement("div");
+  time.append(br);
   div.id = "msg" + id;
   div.className = "their-message";
   div.textContent = message;
+  div.prepend(time)
   box.append(div);
 }
-
-

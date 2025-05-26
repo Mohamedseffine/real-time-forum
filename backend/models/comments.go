@@ -41,6 +41,8 @@ func GetComments(db *sql.DB, postid int) ([]objects.Comment, error) {
 		if err != nil {
 			return nil, err
 		}
+		comment.Content = html.UnescapeString(comment.Content)
+		comment.Username = html.UnescapeString(comment.Username)
 		comments = append(comments, comment)
 	}
 

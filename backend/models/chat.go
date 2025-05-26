@@ -70,6 +70,7 @@ func GetBaseChat(db *sql.DB, senderId int, recieverId int) (objects.Chat, error)
 			log.Println("3", err)
 			return objects.Chat{}, err
 		}
+		message.Content = html.UnescapeString(message.Content)
 		chat.Messages = append(chat.Messages, message)
 	}
 	return chat, nil
