@@ -171,8 +171,8 @@ function setupPostCreation() {
           body: JSON.stringify(payload),
         });
 
+        if (res.status ===500 || res.status === 404 )
         if (!res.ok) throw new Error("Failed to create post");
-
         alert("Post created successfully!");
         document.querySelector(".post-title").value = "";
         document.querySelector(".post-creator textarea").value = "";

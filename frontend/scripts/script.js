@@ -1,8 +1,10 @@
+import { RenderError } from "./error.js";
 import { showAuthFormSignup, createBaseLayout } from "./render.js";
 import { updateUserlist } from "./user.js";
 
 // Initialize WebSocket connection
 export let conn;
+
 export function initializeWebSocket() {
   if (window["WebSocket"]) {
     conn = new WebSocket("ws://" + document.location.host + "/chat");
@@ -66,14 +68,26 @@ export function initializeWebSocket() {
   }
   return null;
 }
+
+export let Init = () => {
+  const token = localStorage.getItem("token");
+  if (location.pathname !== "/") {
+    RenderError(
+      "SORRY PAGE NOT FOUND",
+      404,
+      "The page you're looking for doesn't exist or has been moved."
+    );
+  } else {
+    if (token) {
+      createBaseLayout();
+    } else {
+      showAuthFormSignup();
+    }
+  }
+};
 // Initialize the application
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    createBaseLayout();
-  } else {
-    showAuthFormSignup();
-  }
+  Init();
 });
 
 // Utility function for date formatting
@@ -98,6 +112,6 @@ function AppendMessage(message, id, sender_id, sender_username) {
   div.id = "msg" + id;
   div.className = "their-message";
   div.textContent = message;
-  div.prepend(time)
+  div.prepend(time);
   box.append(div);
 }

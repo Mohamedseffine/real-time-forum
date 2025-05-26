@@ -16,6 +16,14 @@ func HandleRegister(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	// if r.URL.Path != "/" {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.WriteHeader(http.StatusNotFound)
+	// 	json.NewEncoder(w).Encode(map[string]string{
+	// 		"error": "Page not found",
+	// 	})
+	// 	return
+	// }
 	tmp, err := template.ParseFiles("./frontend/index.html")
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
