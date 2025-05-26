@@ -2287,3 +2287,10 @@ textarea:focus::placeholder {
   box-shadow: 0 0 0 2px rgba(45, 206, 137, 0.3);
   animation: pulse 2s infinite;
 }
+
+
+#time-span{
+  display: block;
+  all: unset;
+  font-size: xx-small;
+}

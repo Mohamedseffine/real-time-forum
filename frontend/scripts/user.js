@@ -40,7 +40,8 @@ export async function sendAuthData(
   password,
   firstname,
   lastname,
-  gender
+  gender,
+  age
 ) {
   const authdata = {
     firstname: firstname,
@@ -49,6 +50,7 @@ export async function sendAuthData(
     email: email,
     username: username,
     password: password,
+    age:parseInt(age),
   };
 
   try {
@@ -67,7 +69,7 @@ export async function sendAuthData(
       localStorage.setItem("username", data.username);
       createBaseLayout();
     } else {
-      throw new Error(data.message || "Signup failed");
+      throw new Error(data.message);
     }
   } catch (error) {
     console.error("Signup error:", error);
@@ -145,6 +147,8 @@ export function setupComment(postId, commentsList, noCommentsEl) {
   });
 }
 export function updateUserlist(users, id) {
+  console.log(users);
+  
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
 
@@ -156,8 +160,6 @@ export function updateUserlist(users, id) {
   users.forEach((user) => {
     if (user.id === parseInt(localStorage.getItem("id"))) return;
     if (user.id === id) {
-      console.log("hahaha");
-
       return;
     }
     const userItem = document.createElement("button");
@@ -180,8 +182,6 @@ export function updateUserlist(users, id) {
         user.id,
         LaStInsertedId
       );
-      console.log('jjjjjjjjjjjjjjjj');
-      
     });
 
     userList.appendChild(userItem);
@@ -314,6 +314,14 @@ export async function getMessages(senderId, receiverId, lastID) {
       div.id = "msg" + msg.id;
       div.className = mine ? "my-message" : "their-message";
       div.textContent = msg.message;
+      const time = document.createElement('h5')
+      let when = new Date( Date.parse(msg.time))
+      when = when.toUTCString()
+      time.id = "time-span"
+      time.innerHTML =`${mine?localStorage.getItem("username"):msg.username} At ${when}`
+      const br = document.createElement('div')
+      time.append(br)
+      div.prepend(time)
       box.prepend(div);
     });
 

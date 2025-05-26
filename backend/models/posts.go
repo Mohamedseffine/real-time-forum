@@ -54,6 +54,8 @@ func GetPosts(db *sql.DB) ([]objects.Post, error) {
 		if err := rows.Scan(&post.ID, &post.UserId, &post.Username, &post.Title, &post.Content, &post.CreationTime); err != nil {
 			return nil, err
 		}
+
+
 		row, err := db.Query(`SELECT category_id FROM post_categories WHERE post_id = ?`, post.ID)
 		if err != nil {
 			return nil, err

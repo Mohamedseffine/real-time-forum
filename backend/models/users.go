@@ -11,13 +11,13 @@ import (
 )
 
 func InsertUser(db *sql.DB, user objects.LogData) (int, error) {
-	stm, err := db.Prepare(`INSERT INTO users(username, first_name, last_name, gender, email, password, creation_date) VALUES (?,?,?,?,?,?,?)`)
+	stm, err := db.Prepare(`INSERT INTO users(username, first_name, last_name, gender, email, age, password, creation_date) VALUES (?,?,?,?,?,?,?,?)`)
 	if err != nil {
 		return -1, err
 	}
 	defer stm.Close()
 
-	res, err := stm.Exec(user.Username, html.EscapeString(user.Name), html.EscapeString(user.FamilyName), user.Gender, html.EscapeString(user.Email), user.Password, time.Now())
+	res, err := stm.Exec(user.Username, html.EscapeString(user.Name), html.EscapeString(user.FamilyName), html.EscapeString(user.Gender), html.EscapeString(user.Email), user.Age, user.Password, time.Now())
 	if err != nil {
 		return -1, err
 	}

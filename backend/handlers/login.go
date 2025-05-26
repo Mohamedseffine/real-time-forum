@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"rt_forum/backend/helpers"
 	"rt_forum/backend/models"
 	"rt_forum/backend/objects"
 
@@ -29,6 +30,22 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"error": "can't parse data",
+		})
+		return
+	}
+	if userdata.LogType =="username" && !helpers.IsValidUesrname(userdata.Username){
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]any{
+			"error":"invalid username",
+		})
+		return
+	}
+	if userdata.LogType =="email" && !helpers.IsValidEmail(userdata.Username){
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]any{
+			"error":"invalid email",
 		})
 		return
 	}

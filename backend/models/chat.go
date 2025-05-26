@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"html"
 	"log"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 
 func GetChat(db *sql.DB, senderId int, recieverId int, lastInsertedId int) (objects.Chat, error) {
 	var chat objects.Chat
-	
+
 	stm, err := db.Prepare(`SELECT * FROM messages WHERE ( ( sender_id = ? AND receiver_id = ? ) OR ( sender_id = ? AND receiver_id = ? ) ) AND id < ?  ORDER BY recieved_at DESC LIMIT 10`)
 	if err != nil {
 		log.Println("1", err)
@@ -38,7 +39,7 @@ func InsertMessage(db *sql.DB, Data objects.WsData) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	res, err := stm.Exec(Data.UserId, Data.RecieverId, Data.Message, Data.Status, time.Now(), Data.Username, Data.Reciever_username)
+	res, err := stm.Exec(Data.UserId, Data.RecieverId, html.EscapeString(Data.Message), Data.Status, time.Now(), html.EscapeString(Data.Username), html.EscapeString(Data.Reciever_username))
 	if err != nil {
 		return -1, err
 	}
@@ -52,7 +53,7 @@ func InsertMessage(db *sql.DB, Data objects.WsData) (int, error) {
 func GetBaseChat(db *sql.DB, senderId int, recieverId int) (objects.Chat, error) {
 	var chat objects.Chat
 
-	stm, err := db.Prepare( `SELECT * FROM messages WHERE  ( sender_id = ? AND receiver_id = ? ) OR ( sender_id = ? AND receiver_id = ? )  ORDER BY recieved_at DESC LIMIT 10`)
+	stm, err := db.Prepare(`SELECT * FROM messages WHERE  ( sender_id = ? AND receiver_id = ? ) OR ( sender_id = ? AND receiver_id = ? )  ORDER BY recieved_at DESC LIMIT 10`)
 	if err != nil {
 		log.Println("1", err)
 		return objects.Chat{}, err

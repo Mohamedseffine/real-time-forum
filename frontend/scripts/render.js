@@ -45,6 +45,7 @@ export function showAuthFormSignup() {
             <input type="text" name="username" placeholder="Username" required>
             <input type="text" name="firstname" placeholder="First Name" required>
             <input type="text" name="lastname" placeholder="Last Name" required>
+            <input type="number" name="age" placeholder="Age" required>
             <select name="gender" required>
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
@@ -69,7 +70,8 @@ export function showAuthFormSignup() {
       data.password,
       data.firstname,
       data.lastname,
-      data.gender
+      data.gender,
+      data.age
     );
   });
 

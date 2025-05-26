@@ -1,0 +1,5 @@
+.db
+database/database.db-shm
+database/database.db-wal
+.sh
+.txt

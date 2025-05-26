@@ -13,7 +13,7 @@ func InsertComments(db *sql.DB, userid int, postid int, content string, username
 	if err != nil {
 		return -1, err
 	}
-	res, err := stm.Exec(userid, postid, username, time.Now(), html.EscapeString(content))
+	res, err := stm.Exec(userid, postid, html.EscapeString(username), time.Now(), html.EscapeString(content))
 	if err != nil {
 		return -1, err
 	}
