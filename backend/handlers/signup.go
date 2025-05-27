@@ -55,7 +55,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]any{
-			"error": "invalid username",
+			"error": "invalid username use only lowercase characters and numbers",
 		})
 		return
 	}
@@ -82,7 +82,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]any{
-			"error": "invalid name",
+			"error": "invalid name use only lowercase characters",
 		})
 		return
 	}
@@ -90,7 +90,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]any{
-			"error": "invalid family name",
+			"error": "invalid family name use only lowercase characters",
 		})
 		return
 	}
@@ -122,7 +122,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]any{
-			"error": "can't insert data",
+			"error": "internal server error",
 		})
 		return
 	}

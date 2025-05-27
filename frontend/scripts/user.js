@@ -26,11 +26,11 @@ export async function sendlogindata(username, password) {
       localStorage.setItem("username", data.username);
       createBaseLayout();
     } else {
+      alert(data.error);
       throw new Error(data.message || "Login failed");
     }
   } catch (error) {
     console.error("Login error:", error);
-    alert(error.message);
   }
 }
 
@@ -69,11 +69,11 @@ export async function sendAuthData(
       localStorage.setItem("username", data.username);
       createBaseLayout();
     } else {
-      throw new Error(data.message);
+      // throw new Error(data.message);
+      alert(data.error);
     }
   } catch (error) {
     console.error("Signup error:", error);
-    alert(error.message);
   }
 }
 
@@ -93,6 +93,7 @@ export async function setupLogoutButton() {
         },
         body: JSON.stringify(logoutdata),
       });
+      let data = await res.json()
       if (res.ok) {
         localStorage.removeItem("token");
         localStorage.removeItem("id");
@@ -100,10 +101,12 @@ export async function setupLogoutButton() {
         conn.close();
         document.body.innerHTML = `<div id="root"></div>`
         showAuthFormLogin();
+      }else {
+        alert(data.error)
       }
     } catch {
       console.error("Logout error ", error);
-      alert(error.message);
+      alert(error.error);
     }
   });
 }
@@ -143,7 +146,7 @@ export function setupComment(postId, commentsList, noCommentsEl) {
       input.value = "";
       noCommentsEl?.remove();
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(`Error: ${err.error}`);
     }
   });
 }
@@ -347,6 +350,6 @@ export async function getMessages(senderId, receiverId, lastID) {
       : null;
   } catch (err) {
     console.error("getMessages error:", err);
-    alert(err.message);
+    alert(err.error);
   }
 }

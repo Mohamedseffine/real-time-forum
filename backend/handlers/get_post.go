@@ -23,7 +23,7 @@ func RetrievePosts(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
-			"error": "server error",
+			"error": "database error",
 		})
 	}
 	w.Header().Set("Content-Type", "application/json")

@@ -35,7 +35,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
-			"error": "invalid data",
+			"error": "database error",
 		})
 		return
 	}

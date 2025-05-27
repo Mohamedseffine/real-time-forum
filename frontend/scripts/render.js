@@ -170,9 +170,12 @@ function setupPostCreation() {
           },
           body: JSON.stringify(payload),
         });
-
-        if (res.status ===500 || res.status === 404 )
-        if (!res.ok) throw new Error("Failed to create post");
+        let data = await res.json()
+        if (res.status === 500 || res.status === 404)
+          if (!res.ok) {
+            alert(data.error)
+            throw new Error("Failed to create post");
+          }
         alert("Post created successfully!");
         document.querySelector(".post-title").value = "";
         document.querySelector(".post-creator textarea").value = "";
@@ -181,7 +184,7 @@ function setupPostCreation() {
           .forEach((el) => el.classList.remove("selected"));
         loadPosts();
       } catch (err) {
-        alert(`Error: ${err.message}`);
+        alert(`Error: ${err.error}`);
       }
     });
 
@@ -264,13 +267,17 @@ function setupComment(postId) {
           content: commentText,
         }),
       });
+      let data = await res.json();
 
-      if (!res.ok) throw new Error("Failed to post comment");
+      if (!res.ok) {
+        alert(data.error);
+        throw new Error("Failed to post comment");
+      }
 
       input.value = "";
       retrieve_comments(postId, commentsList, noComments);
     } catch (err) {
-      alert("Error posting comment: " + err.message);
+      alert("Error posting comment: " + err.error);
     }
   });
 }
@@ -297,7 +304,7 @@ function retrieve_comments(postId, commentsList, noComments) {
 }
 
 export function parsetime(seconds) {
-    if (seconds / (1000 * 60 * 60 * 24 * 365) >= 1) {
+  if (seconds / (1000 * 60 * 60 * 24 * 365) >= 1) {
     return `${Math.floor(seconds / (1000 * 60 * 60 * 24 * 365))}y `.concat(
       parsetime(seconds % (1000 * 60 * 60 * 24 * 7 * 30))
     );
