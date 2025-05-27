@@ -1,1 +1,1 @@
-go run backend/main.go
+go run main.go

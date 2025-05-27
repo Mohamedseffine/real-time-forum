@@ -7,7 +7,7 @@ export let conn;
 
 export function initializeWebSocket() {
   if (window["WebSocket"]) {
-    conn = new WebSocket("ws://" + document.location.host + "/chat");
+    conn = new WebSocket("/chat");
     conn.onopen = () => {
       conn.send(
         JSON.stringify({

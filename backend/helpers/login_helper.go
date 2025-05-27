@@ -46,7 +46,7 @@ func IsValidEmail(email string) bool {
 	return reg.Match([]byte(email))
 }
 
-func IsLoggedIn(db *sql.DB, r *http.Request) bool {
+func CantLog(db *sql.DB, r *http.Request) bool {
 	token, err := r.Cookie("token")
 	if err != nil {
 		return !(err.Error() == "http: named cookie not present")
@@ -58,7 +58,6 @@ func IsLoggedIn(db *sql.DB, r *http.Request) bool {
 	}
 	expires_at, err := models.IsExpired(db, tok)
 	if err != nil {
-
 		return true
 	}
 	return time.Now().After(expires_at)
