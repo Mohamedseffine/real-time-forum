@@ -93,7 +93,6 @@ export async function setupLogoutButton() {
         },
         body: JSON.stringify(logoutdata),
       });
-      let data = await res.json()
       if (res.ok) {
         localStorage.removeItem("token");
         localStorage.removeItem("id");
@@ -102,6 +101,7 @@ export async function setupLogoutButton() {
         document.body.innerHTML = `<div id="root"></div>`
         showAuthFormLogin();
       }else {
+        let data = await res.json()
         alert(data.error)
       }
     } catch {
