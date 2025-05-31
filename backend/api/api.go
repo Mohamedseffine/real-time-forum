@@ -13,10 +13,10 @@ func Multiplexer() {
 	http.HandleFunc("/chat", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleWS(w, r, db)
 	})
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	handlers.HandleRegister(w, r, db)
-	// })
-	http.HandleFunc("/", middleware.IsAlreadyLoggedIn(handlers.HandleRegister, db))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HandleRegister(w, r, db)
+	})
+	// http.HandleFunc("/", middleware.IsAlreadyLoggedIn(handlers.HandleRegister, db))
 	http.HandleFunc("/frontend/", handlers.HandleStatic)
 	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		handlers.HandleSignUp(w, r, db)
@@ -26,24 +26,13 @@ func Multiplexer() {
 		handlers.LoginHandler(w, r, db)
 	})
 
-	http.HandleFunc("/create_post", func(w http.ResponseWriter, r *http.Request) {
-		handlers.CreatePostHandler(w, r, db)
-	})
+	http.HandleFunc("/create_post",middleware.IsAlreadyLoggedIn(handlers.CreatePostHandler, db))
 
-	http.HandleFunc("/create_comment", func(w http.ResponseWriter, r *http.Request) {
-		handlers.CreateCommentHandler(w, r, db)
-	})
+	http.HandleFunc("/create_comment", middleware.IsAlreadyLoggedIn(handlers.CreateCommentHandler, db))
 
-	http.HandleFunc("/retrieve_posts", func(w http.ResponseWriter, r *http.Request) {
-		handlers.RetrievePosts(w, r, db)
-	})
-	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
-		handlers.LogoutHandler(w, r, db)
-	})
-	http.HandleFunc("/retrieve_comments", func(w http.ResponseWriter, r *http.Request) {
-		handlers.RetrieveComments(w, r, db)
-	})
-	http.HandleFunc("/get_chat", func(w http.ResponseWriter, r *http.Request) {
-		handlers.GetChatMessages(w, r, db)
-	})
+	http.HandleFunc("/retrieve_posts", middleware.IsAlreadyLoggedIn(handlers.RetrievePosts, db))
+
+	http.HandleFunc("/logout", middleware.IsAlreadyLoggedIn(handlers.LogoutHandler, db))
+	http.HandleFunc("/retrieve_comments", middleware.IsAlreadyLoggedIn(handlers.RetrieveComments, db))
+	http.HandleFunc("/get_chat", middleware.IsAlreadyLoggedIn(handlers.GetChatMessages, db))
 }

@@ -31,6 +31,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	
 
 	token, err := r.Cookie("token")
 	if err != nil {
@@ -51,16 +52,16 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	objects.Users[id] = Conn
 	mu.Unlock()
 
-	if len(objects.Users) > 1 {
-		for _, val := range objects.Users {
-			if val != Conn {
-				Conn.WriteJSON(map[string]any{
-					"type": "connected",
-					"id":   id,
-				})
-			}
-		}
-	}
+	// if len(objects.Users) > 1 {
+	// 	for _, val := range objects.Users {
+	// 		if val != Conn {
+	// 			Conn.WriteJSON(map[string]any{
+	// 				"type": "connected",
+	// 				"id":   id,
+	// 			})
+	// 		}
+	// 	}
+	// }
 	var data objects.WsData
 	users, err := models.GetAllUsers(db, id)
 	if err != nil {

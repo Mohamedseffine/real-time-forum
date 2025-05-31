@@ -1,5 +1,6 @@
 import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
 import { initializeWebSocket } from "./script.js";
+import { RenderError } from "./error.js";
 
 export function showAuthFormLogin() {
   const root = document.getElementById("root");
@@ -170,11 +171,18 @@ function setupPostCreation() {
           },
           body: JSON.stringify(payload),
         });
-        let data = await res.json()
+        let data = await res.json();
         if (res.status === 500 || res.status === 404)
           if (!res.ok) {
-            alert(data.error)
-            throw new Error("Failed to create post");
+            alert(data.error);
+            if ((data.error = "this is unauthorized")) {
+              localStorage.removeItem("id");
+              localStorage.removeItem("username");
+              localStorage.removeItem("token");
+              RenderError(data.error, 401, "you can not acces this ");
+            } else {
+              throw new Error("Failed to create post");
+            }
           }
         alert("Post created successfully!");
         document.querySelector(".post-title").value = "";
@@ -200,6 +208,14 @@ export async function loadPosts() {
     const res = await fetch("/retrieve_posts");
     const posts = await res.json();
 
+    if (!res.ok) {
+      if ((posts.error = "this is unauthorized")) {
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
+        localStorage.removeItem("token");
+        RenderError(data.error, 401, "you can not acces this content");
+      }
+    }
     const feed = document.querySelector(".posts-feed");
     feed.innerHTML = "";
 
@@ -271,7 +287,16 @@ function setupComment(postId) {
 
       if (!res.ok) {
         alert(data.error);
-        throw new Error("Failed to post comment");
+        console.log(data);
+
+        if ((data.error = "this is unauthorized")) {
+          localStorage.removeItem("id");
+          localStorage.removeItem("username");
+          localStorage.removeItem("token");
+          RenderError(data.error, 401, "you can not acces this ");
+        } else {
+          throw new Error("Failed to post comment");
+        }
       }
 
       input.value = "";

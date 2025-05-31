@@ -4,7 +4,10 @@ import { updateUserlist } from "./user.js";
 
 // Initialize WebSocket connection
 export let conn;
-
+// export let worker = new SharedWorker("./script.js");
+// worker.port.onmessage((evt) => {
+//   console.log(evt.data);
+// });
 export function initializeWebSocket() {
   if (window["WebSocket"]) {
     conn = new WebSocket("/chat");
@@ -87,6 +90,7 @@ export let Init = () => {
 };
 // Initialize the application
 document.addEventListener("DOMContentLoaded", () => {
+  // worker.port.start();
   Init();
 });
 

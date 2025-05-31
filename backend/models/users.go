@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"log"
 
 	"html"
 	"rt_forum/backend/objects"
@@ -153,8 +152,8 @@ func GetId(db *sql.DB, token string) (int, error) {
 }
 
 func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
-	var query = `SELECT `
-	log.Println(query)
+	//var query = `SELECT `
+
 	stm, err := db.Prepare(`SELECT id, username FROM users`)
 	if err != nil {
 		return nil, err
