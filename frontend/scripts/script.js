@@ -22,7 +22,7 @@ export function initializeWebSocket() {
       try {
         const data = JSON.parse(evt.data);
         if (data.type === "all_users") {
-          updateUserlist(data.users, 0);
+          updateUserlist(data.users, data.unreads, 0);
         } else if (data.type === "Disconneted") {
           document.getElementById("user" + data.id).classList.remove("active");
         } else if (data.type === "connected") {
@@ -32,7 +32,9 @@ export function initializeWebSocket() {
             updateUserlist(data.users, 0);
           }
         } else if (data.type === "message") {
+          let ulist = document.getElementsByClassName("users-list")[0]
           let sender = document.getElementById("user".concat(data.sender_id));
+          ulist.prepend(sender)
           if (
             !sender.textContent.includes("💡") &&
             document.getElementById(`chat-${data.sender_id}`) === null
@@ -110,7 +112,7 @@ function AppendMessage(message, id, sender_id, sender_username) {
   const br = document.createElement("div");
   time.append(br);
   div.id = "msg" + id;
-  div.className = sender_id === parseInt(localStorage().getItem("id"))? "my-message":"their-message";
+  div.className = sender_id === parseInt(localStorage.getItem("id"))? "my-message":"their-message";
   div.textContent = message;
   div.prepend(time);
   box.append(div);

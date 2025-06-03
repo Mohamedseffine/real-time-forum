@@ -101,6 +101,7 @@ type WsData struct {
 	RecieverId        int     `json:"receiver_id"`
 	Reciever_username string  `json:"receiver_username"`
 	Status            string  `json:"status"`
+	Unread            []int   `json:"unreads"`
 }
 
 type Infos struct {

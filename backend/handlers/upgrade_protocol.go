@@ -50,18 +50,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	unreadMess, err := models.UnreadMess(db, id)
-	if err != nil {
-		log.Println(err, "line 53")
-		Conn.WriteJSON(map[string]string{
-			"error": "can't get messages",
-		})
-		return
-	}
-	Conn.WriteJSON(map[string]any{
-		"type": "unread_messages",
-		"list": unreadMess,
-	})
+
 	mu.Lock()
 	objects.Users[id] = append(objects.Users[id], Conn)
 	mu.Unlock()
@@ -80,9 +69,19 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			users[i].IsActive = 1
 		}
 	}
+	unreadMess, err := models.UnreadMess(db, id)
+	if err != nil {
+		log.Println(err, "line 53")
+		Conn.WriteJSON(map[string]string{
+			"error": "can't get messages",
+		})
+		return
+	}
 	data.Type = "all_users"
 	data.Message = "sent"
 	data.Users = users
+	data.Unread = unreadMess
+
 	Conn.WriteJSON(data)
 	updateLoginState(id, data.Users)
 	for {
@@ -118,6 +117,14 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 				}
 			}
 			SendMessage(message, id)
+		}else if message.Type == "update" {
+			err := models.UpdateMessState(db, message.UserId, message.RecieverId)
+			if err != nil {
+				Conn.WriteJSON(map[string]string{
+					"error":err.Error(),
+				})
+				return
+			}
 		}
 	}
 

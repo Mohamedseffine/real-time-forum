@@ -76,8 +76,6 @@ func GetBaseChat(db *sql.DB, senderId int, recieverId int) (objects.Chat, error)
 	return chat, nil
 }
 
-
-
 func UnreadMess(db *sql.DB, id int) ([]int, error) {
 	stm, err := db.Prepare(`SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ? AND mtype = "unread"`)
 
@@ -98,4 +96,16 @@ func UnreadMess(db *sql.DB, id int) ([]int, error) {
 		ids = append(ids, Uid)
 	}
 	return ids, nil
+}
+
+func UpdateMessState(db *sql.DB, senderId int, recieverId int) error {
+	stm, err := db.Prepare(`UPDATE messages SET mtype = "read" WHERE sender_id = ? AND receiver_id = ?`)
+	if err != nil {
+		return err
+	}
+	_, err = stm.Exec(senderId, recieverId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

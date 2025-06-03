@@ -1,5 +1,5 @@
 import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
-import { initializeWebSocket } from "./script.js";
+import { conn, initializeWebSocket } from "./script.js";
 import { RenderError } from "./error.js";
 export function showAuthFormLogin() {
   const root = document.getElementById("root");
@@ -176,6 +176,7 @@ function setupPostCreation() {
           if (!res.ok) {
             alert(data.error);
             if ((data.error = "this is unauthorized")) {
+              conn.close()
               localStorage.removeItem("id");
               localStorage.removeItem("username");
               localStorage.removeItem("token");
@@ -210,11 +211,14 @@ export async function loadPosts() {
     const posts = await res.json();
 
     if (!res.ok) {
+      console.log(posts.error);
+      
       if ((posts.error = "this is unauthorized")) {
+        conn.close();
         localStorage.removeItem("id");
         localStorage.removeItem("username");
         localStorage.removeItem("token");
-        RenderError(data.error, 401, "you can not acces this content");
+        RenderError(posts.error, 401, "you can not acces this content");
         return
       }
     }
@@ -292,6 +296,7 @@ function setupComment(postId) {
         console.log(data);
 
         if ((data.error = "this is unauthorized")) {
+          conn.close()
           localStorage.removeItem("id");
           localStorage.removeItem("username");
           localStorage.removeItem("token");
