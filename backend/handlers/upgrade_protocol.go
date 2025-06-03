@@ -96,6 +96,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 		if message.Type == "message" {
 			id, err := models.InsertMessage(db, message)
+			log.Println(" la ana lwl")
 			if err != nil {
 				log.Println(err, "line 101")
 				Conn.WriteJSON(map[string]any{
@@ -118,8 +119,11 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			}
 			SendMessage(message, id)
 		}else if message.Type == "update" {
+			log.Println("ha ana ")
 			err := models.UpdateMessState(db, message.UserId, message.RecieverId)
+			log.Println("lwl")
 			if err != nil {
+				log.Println(err.Error(), "line 123")
 				Conn.WriteJSON(map[string]string{
 					"error":err.Error(),
 				})
