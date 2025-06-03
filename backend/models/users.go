@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"log"
 
 	"html"
 	"rt_forum/backend/objects"
@@ -152,21 +153,44 @@ func GetId(db *sql.DB, token string) (int, error) {
 }
 
 func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
-	//var query = `SELECT `
-
-	stm, err := db.Prepare(`SELECT id, username FROM users`)
+	var query = `   SELECT u.id, u.username
+    FROM (
+        SELECT 
+            CASE 
+                WHEN sender_id = $1 THEN receiver_id 
+                ELSE sender_id 
+            END AS user_id,
+            MAX(recieved_at) AS latest_message_time
+        FROM messages
+        WHERE sender_id = $1 OR receiver_id = $1
+        GROUP BY user_id
+    ) AS latest
+    JOIN messages m2 
+        ON ((m2.sender_id = $1 AND m2.receiver_id = latest.user_id)
+         OR (m2.sender_id = latest.user_id AND m2.receiver_id = $1))
+        AND m2.recieved_at = latest.latest_message_time
+    JOIN users u ON u.id = latest.user_id
+    ORDER BY m2.recieved_at DESC
+        `
+	// query = `SELECT id, username FROM users`
+	stm, err := db.Prepare(query)
 	if err != nil {
+		log.Fatal("line 178", err.Error())
 		return nil, err
 	}
-	rows, err := stm.Query()
+
+	rows, err := stm.Query(id)
 	if err != nil {
+		log.Fatal("line 184", err.Error())
 		return nil, err
 	}
 	var users []objects.Infos
 	for rows.Next() {
+
 		var user objects.Infos
 		err = rows.Scan(&user.Id, &user.Username)
 		if err != nil {
+			log.Fatal("line 193", err.Error())
 			return nil, err
 		}
 		users = append(users, user)
