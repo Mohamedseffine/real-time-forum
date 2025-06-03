@@ -4,17 +4,14 @@ import { updateUserlist } from "./user.js";
 
 // Initialize WebSocket connection
 export let conn;
-// export let worker = new SharedWorker("./script.js");
-// worker.port.onmessage((evt) => {
-//   console.log(evt.data);
-// });
+
 export function initializeWebSocket() {
   if (window["WebSocket"]) {
     conn = new WebSocket("/chat");
     conn.onopen = () => {
       conn.send(
         JSON.stringify({
-          type: "message",
+          type: "opened",
           message: "hi",
         })
       );
@@ -90,7 +87,6 @@ export let Init = () => {
 };
 // Initialize the application
 document.addEventListener("DOMContentLoaded", () => {
-  // worker.port.start();
   Init();
 });
 
@@ -114,7 +110,7 @@ function AppendMessage(message, id, sender_id, sender_username) {
   const br = document.createElement("div");
   time.append(br);
   div.id = "msg" + id;
-  div.className = "their-message";
+  div.className = sender_id === parseInt(localStorage().getItem("id"))? "my-message":"their-message";
   div.textContent = message;
   div.prepend(time);
   box.append(div);

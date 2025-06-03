@@ -98,11 +98,11 @@ export async function setupLogoutButton() {
         localStorage.removeItem("id");
         localStorage.removeItem("username");
         conn.close();
-        document.body.innerHTML = `<div id="root"></div>`
+        document.body.innerHTML = `<div id="root"></div>`;
         showAuthFormLogin();
-      }else {
-        let data = await res.json()
-        alert(data.error)
+      } else {
+        let data = await res.json();
+        alert(data.error);
       }
     } catch {
       console.error("Logout error ", error);
@@ -139,8 +139,17 @@ export function setupComment(postId, commentsList, noCommentsEl) {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Failed to post comment");
       const savedComment = await res.json();
+      if (!res.ok) {
+        if ((savedComment.error = "this is unauthorized")) {
+          localStorage.removeItem("id");
+          localStorage.removeItem("username");
+          localStorage.removeItem("token");
+          RenderError(data.error, 401, "you can not acces this content");
+          return;
+        }
+        throw new Error("Failed to post comment");
+      }
       console.log(savedComment);
 
       input.value = "";
@@ -259,12 +268,10 @@ function sendMessage(userId) {
   let when = new Date(Date.now());
   when = when.toUTCString();
   time.id = "time-span";
-  time.innerHTML = `${
-    localStorage.getItem("username")
-  } At ${when}`;
+  time.innerHTML = `${localStorage.getItem("username")} At ${when}`;
   const br = document.createElement("div");
   time.append(br);
-  msgElement.prepend(time)
+  msgElement.prepend(time);
   messageBox.appendChild(msgElement);
   let username = document
     .getElementById("user".concat(userId))
@@ -306,12 +313,18 @@ export async function getMessages(senderId, receiverId, lastID) {
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch messages");
-    }
-
     const messages = await res.json();
 
+    if (!res.ok) {
+      if ((messages.error = "this is unauthorized")) {
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
+        localStorage.removeItem("token");
+        RenderError(data.error, 401, "you can not acces this content");
+        return;
+      }
+      throw new Error("Failed to fetch messages");
+    }
     const box = document.getElementById(`chat-${receiverId}`);
     console.log(box);
 

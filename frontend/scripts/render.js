@@ -1,7 +1,6 @@
 import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
 import { initializeWebSocket } from "./script.js";
 import { RenderError } from "./error.js";
-
 export function showAuthFormLogin() {
   const root = document.getElementById("root");
   root.innerHTML = "";
@@ -83,6 +82,7 @@ export function showAuthFormSignup() {
 
 export function createBaseLayout() {
   initializeWebSocket();
+  
   const root = document.getElementById("root");
   root.innerHTML = "";
 
@@ -172,7 +172,7 @@ function setupPostCreation() {
           body: JSON.stringify(payload),
         });
         let data = await res.json();
-        if (res.status === 500 || res.status === 404)
+        
           if (!res.ok) {
             alert(data.error);
             if ((data.error = "this is unauthorized")) {
@@ -180,6 +180,7 @@ function setupPostCreation() {
               localStorage.removeItem("username");
               localStorage.removeItem("token");
               RenderError(data.error, 401, "you can not acces this ");
+              return
             } else {
               throw new Error("Failed to create post");
             }
@@ -214,6 +215,7 @@ export async function loadPosts() {
         localStorage.removeItem("username");
         localStorage.removeItem("token");
         RenderError(data.error, 401, "you can not acces this content");
+        return
       }
     }
     const feed = document.querySelector(".posts-feed");
@@ -294,6 +296,7 @@ function setupComment(postId) {
           localStorage.removeItem("username");
           localStorage.removeItem("token");
           RenderError(data.error, 401, "you can not acces this ");
+          return
         } else {
           throw new Error("Failed to post comment");
         }

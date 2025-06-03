@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 
 	"net/http"
 	"rt_forum/backend/models"
@@ -31,10 +32,10 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	
 
 	token, err := r.Cookie("token")
 	if err != nil {
+		log.Println(err, "line 37")
 		Conn.WriteJSON(map[string]any{
 			"error": "cookie error",
 		})
@@ -43,28 +44,32 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id, err := models.GetId(db, strings.TrimPrefix(token.String(), "token="))
 	defer handleConnClosure(Conn, id)
 	if err != nil {
+		log.Println(err, "line 47")
 		Conn.WriteJSON(map[string]any{
 			"error": "db error ",
 		})
 		return
 	}
+	unreadMess, err := models.UnreadMess(db, id)
+	if err != nil {
+		log.Println(err, "line 53")
+		Conn.WriteJSON(map[string]string{
+			"error": "can't get messages",
+		})
+		return
+	}
+	Conn.WriteJSON(map[string]any{
+		"type": "unread_messages",
+		"list": unreadMess,
+	})
 	mu.Lock()
-	objects.Users[id] = Conn
+	objects.Users[id] = append(objects.Users[id], Conn)
 	mu.Unlock()
 
-	// if len(objects.Users) > 1 {
-	// 	for _, val := range objects.Users {
-	// 		if val != Conn {
-	// 			Conn.WriteJSON(map[string]any{
-	// 				"type": "connected",
-	// 				"id":   id,
-	// 			})
-	// 		}
-	// 	}
-	// }
 	var data objects.WsData
 	users, err := models.GetAllUsers(db, id)
 	if err != nil {
+		log.Println(err, "line 70")
 		Conn.WriteJSON(map[string]any{
 			"error": err,
 		})
@@ -72,7 +77,6 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	for i := range users {
 		if objects.Users[users[i].Id] != nil {
-
 			users[i].IsActive = 1
 		}
 	}
@@ -80,11 +84,12 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	data.Message = "sent"
 	data.Users = users
 	Conn.WriteJSON(data)
-	updateLoginState(Conn, id, data.Users)
+	updateLoginState(id, data.Users)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)
 		if err != nil {
+			log.Println(err, "line 90")
 			Conn.WriteJSON(map[string]any{
 				"error": "can not read message",
 			})
@@ -93,9 +98,24 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		if message.Type == "message" {
 			id, err := models.InsertMessage(db, message)
 			if err != nil {
+				log.Println(err, "line 101")
 				Conn.WriteJSON(map[string]any{
 					"error": err.Error(),
 				})
+				return
+			}
+			for _, c := range objects.Users[id] {
+				if c != Conn {
+					c.WriteJSON(map[string]any{
+						"type":            message.Type,
+						"id":              id,
+						"sender_id":       message.UserId,
+						"sender_username": message.Username,
+						"content":         message.Message,
+						"time":            time.Now(),
+						"status":          "unread",
+					})
+				}
 			}
 			SendMessage(message, id)
 		}
@@ -108,38 +128,46 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 	delete(objects.Users, id)
 	mu.Unlock()
 	Conn.Close()
-	for _, val := range objects.Users {
-		if val != Conn {
-			val.WriteJSON(map[string]any{
-				"type": "Disconneted",
-				"id":   id,
-			})
+	for ind, val := range objects.Users {
+		if ind != id {
+			for _, v := range val {
+				v.WriteJSON(map[string]any{
+					"type": "Disconneted",
+					"id":   id,
+				})
+			}
 		}
 	}
 }
 
-func updateLoginState(Conn *websocket.Conn, id int, users []objects.Infos) {
-	for _, val := range objects.Users {
-		if val != Conn {
-			val.WriteJSON(map[string]any{
-				"type":  "connected",
-				"id":    id,
-				"users": users,
-			})
+func updateLoginState(id int, users []objects.Infos) {
+	for ind, val := range objects.Users {
+		if ind != id {
+			for _, v := range val {
+				v.WriteJSON(map[string]any{
+					"type":  "connected",
+					"id":    id,
+					"users": users,
+				})
+			}
+
 		}
 	}
 }
 
 func SendMessage(message objects.WsData, id int) {
-	if Conn := objects.Users[message.RecieverId]; Conn != nil {
-		Conn.WriteJSON(map[string]any{
-			"type":            message.Type,
-			"id":              id,
-			"sender_id":       message.UserId,
-			"sender_username": message.Username,
-			"content":         message.Message,
-			"time":            time.Now(),
-			"status":          "unread",
-		})
+	if Conns := objects.Users[message.RecieverId]; len(Conns) != 0 {
+		for _, v := range Conns {
+			v.WriteJSON(map[string]any{
+				"type":            message.Type,
+				"id":              id,
+				"sender_id":       message.UserId,
+				"sender_username": message.Username,
+				"content":         message.Message,
+				"time":            time.Now(),
+				"status":          "unread",
+			})
+		}
 	}
+
 }

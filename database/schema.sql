@@ -76,11 +76,6 @@ CREATE TABLE IF NOT EXISTS post_categories (
     FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS chats (
-    chat_id INTEGER PRIMARY KEY,
-    unread_messages INTEGER NOT NULL,
-    st_part VARCHAR(50) NOT NULL,
-    nd_part VARCHAR(50) NOT NULL
-);
+
 PRAGMA foreign_keys = ON;
 PRAGMA journal_mode = WAL;

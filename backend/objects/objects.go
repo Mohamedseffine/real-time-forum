@@ -109,4 +109,4 @@ type Infos struct {
 	IsActive int    `json:"active"`
 }
 
-var Users = make(map[int]*websocket.Conn)
+var Users = make(map[int][]*websocket.Conn)

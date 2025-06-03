@@ -33,24 +33,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	if userdata.LogType =="username" && !helpers.IsValidUesrname(userdata.Username){
+	if userdata.LogType == "username" && !helpers.IsValidUesrname(userdata.Username) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]any{
-			"error":"invalid username",
+			"error": "invalid username",
 		})
 		return
 	}
-	if userdata.LogType =="email" && !helpers.IsValidEmail(userdata.Username){
+	if userdata.LogType == "email" && !helpers.IsValidEmail(userdata.Username) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]any{
-			"error":"invalid email",
+			"error": "invalid email",
 		})
 		return
 	}
 
-	id, username,erro := models.ExtractUser(db, userdata.Password, userdata.Username, userdata.LogType)
+	id, username, erro := models.ExtractUser(db, userdata.Password, userdata.Username, userdata.LogType)
 	if erro != "" {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -83,15 +83,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Expires:  time.Now().Add(2 * time.Hour),
 		HttpOnly: true,
 	})
-	if username!="" {
-		userdata.Username=username
+	if username != "" {
+		userdata.Username = username
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]any{
 		"id":       id,
-		"username":userdata.Username,
+		"username": userdata.Username,
 		"token":    token.String(),
-		"unread_mess":[]int{},
 	})
 }
