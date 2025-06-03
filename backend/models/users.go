@@ -2,11 +2,11 @@ package models
 
 import (
 	"database/sql"
-	"log"
-
 	"html"
-	"rt_forum/backend/objects"
+	"log"
 	"time"
+
+	"rt_forum/backend/objects"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -153,7 +153,7 @@ func GetId(db *sql.DB, token string) (int, error) {
 }
 
 func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
-	var query = `   SELECT u.id, u.username
+	query := `   SELECT u.id, u.username
     FROM (
         SELECT 
             CASE 
@@ -207,3 +207,58 @@ func IsExpired(db *sql.DB, token string) (time.Time, error) {
 	err = stm.QueryRow(token).Scan(&expires_at)
 	return expires_at, err
 }
+
+/*
+func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
+	query := `SELECT
+    u.id,
+    u.username,
+    MAX(datetime(m.recieved_at)) AS last_message_time
+FROM
+    users u
+LEFT JOIN messages m
+    ON $1 = m.sender_id OR $1 = m.receiver_id
+GROUP BY
+    u.id, u.username
+ORDER BY
+    last_message_time DESC NULLS LAST,
+    u.username ASC;
+
+
+	`
+	stm, err := db.Prepare(query)
+	if err != nil {
+		log.Fatal("line 178", err.Error())
+		return nil, err
+	}
+
+	rows, err := stm.Query(id)
+	if err != nil {
+		log.Fatal("line 184", err.Error())
+		return nil, err
+	}
+	var users []objects.Infos
+	for rows.Next() {
+		var user objects.Infos
+		var receivedAt sql.NullString
+
+		err = rows.Scan(&user.Id, &user.Username, &receivedAt)
+		if err != nil {
+			log.Fatal("line 193", err.Error())
+			return nil, err
+		}
+
+		if receivedAt.Valid {
+			parsedTime, err := time.Parse("2006-01-02 15:04:05", receivedAt.String)
+			if err == nil {
+				user.LastMessageTime = parsedTime // Add this field in your struct if needed
+			}
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
+*/
