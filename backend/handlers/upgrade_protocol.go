@@ -56,7 +56,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	mu.Unlock()
 
 	var data objects.WsData
-	users, err := models.GetAllUsers(db, id)
+	users, err := models.GetAllUsersBymessDate(db, id)
 	if err != nil {
 		log.Println(err, "line 70")
 		Conn.WriteJSON(map[string]any{

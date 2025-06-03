@@ -152,27 +152,20 @@ func GetId(db *sql.DB, token string) (int, error) {
 	return id, nil
 }
 
-func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
-	query := `   SELECT u.id, u.username
-    FROM (
-        SELECT 
-            CASE 
-                WHEN sender_id = $1 THEN receiver_id 
-                ELSE sender_id 
-            END AS user_id,
-            MAX(recieved_at) AS latest_message_time
-        FROM messages
-        WHERE sender_id = $1 OR receiver_id = $1
-        GROUP BY user_id
-    ) AS latest
-    JOIN messages m2 
-        ON ((m2.sender_id = $1 AND m2.receiver_id = latest.user_id)
-         OR (m2.sender_id = latest.user_id AND m2.receiver_id = $1))
-        AND m2.recieved_at = latest.latest_message_time
-    JOIN users u ON u.id = latest.user_id
-    ORDER BY m2.recieved_at DESC
-        `
-	// query = `SELECT id, username FROM users`
+func GetAllUsersBymessDate(db *sql.DB, id int) ([]objects.Infos, error) {
+	query := `SELECT 
+    u.id,
+    u.username
+FROM 
+    users u
+LEFT JOIN 
+    messages m ON ( m.sender_id = $1 OR  m.receiver_id = $1 )
+GROUP BY 
+    u.id, u.username
+ORDER BY 
+    CASE WHEN MAX(m.recieved_at) IS NULL THEN 1 ELSE 0 END,
+    MAX(m.recieved_at) ASC;`
+
 	stm, err := db.Prepare(query)
 	if err != nil {
 		log.Fatal("line 178", err.Error())

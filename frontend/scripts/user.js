@@ -142,7 +142,7 @@ export function setupComment(postId, commentsList, noCommentsEl) {
       const savedComment = await res.json();
       if (!res.ok) {
         if ((savedComment.error = "this is unauthorized")) {
-          conn.close()
+          conn.close();
           localStorage.removeItem("id");
           localStorage.removeItem("username");
           localStorage.removeItem("token");
@@ -160,8 +160,7 @@ export function setupComment(postId, commentsList, noCommentsEl) {
     }
   });
 }
-export function updateUserlist(users, unreads=[],id) {
-
+export function updateUserlist(users, unreads = [], id) {
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
 
@@ -178,8 +177,11 @@ export function updateUserlist(users, unreads=[],id) {
     const userItem = document.createElement("button");
     userItem.className = "user-item";
     userItem.textContent = user.username;
-    if (unreads.includes(user.id)) {
-      userItem.textContent = user.username.concat("💡");
+    if (unreads != null) {
+      console.log(unreads)
+      if (unreads.includes(user.id)) {
+        userItem.textContent = user.username.concat("💡");
+      }
     }
     userItem.id = "user" + user.id;
     userItem.dataset.userid = user.id;
@@ -194,11 +196,11 @@ export function updateUserlist(users, unreads=[],id) {
       userItem.innerText = userItem.innerText.replace("💡", "");
       openChatWithUser(user);
       let Data = {
-        type : "update",
-        id : user.id,
-        receiver_id :parseInt(localStorage.getItem("id") )
-      }
-      conn.send(JSON.stringify(Data))
+        type: "update",
+        id: user.id,
+        receiver_id: parseInt(localStorage.getItem("id")),
+      };
+      conn.send(JSON.stringify(Data));
       LaStInsertedId = await getMessages(
         parseInt(localStorage.getItem("id")),
         user.id,
@@ -326,7 +328,7 @@ export async function getMessages(senderId, receiverId, lastID) {
 
     if (!res.ok) {
       if ((messages.error = "this is unauthorized")) {
-        conn.close()
+        conn.close();
         localStorage.removeItem("id");
         localStorage.removeItem("username");
         localStorage.removeItem("token");

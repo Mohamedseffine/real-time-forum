@@ -9,7 +9,6 @@ export function initializeWebSocket() {
   if (window["WebSocket"]) {
     conn = new WebSocket("/chat");
     conn.onopen = () => {
-      
       console.log("WebSocket connection established");
     };
 
@@ -24,7 +23,7 @@ export function initializeWebSocket() {
           if (document.getElementById("user" + data.id) != null) {
             document.getElementById("user" + data.id).classList.add("active");
           } else if (document.getElementById("user" + data.id) === null) {
-            updateUserlist(data.users, 0);
+            updateUserlist(data.users, data.unreads, 0);
           }
         } else if (data.type === "message") {
           let ulist = document.getElementsByClassName("users-list")[0];
