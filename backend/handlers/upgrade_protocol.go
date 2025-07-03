@@ -54,7 +54,6 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	mu.Lock()
 	objects.Users[id] = append(objects.Users[id], Conn)
 	mu.Unlock()
-
 	var data objects.WsData
 	users, err := models.GetAllUsersBymessDate(db, id)
 	if err != nil {
@@ -84,6 +83,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	Conn.WriteJSON(data)
 	updateLoginState(id, data.Users)
+	log.Println(objects.Users)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)
@@ -95,7 +95,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			return
 		}
 		if message.Type == "message" {
-			id, err := models.InsertMessage(db, message)
+			idm, err := models.InsertMessage(db, message)
 			log.Println(" la ana lwl")
 			if err != nil {
 				log.Println(err, "line 101")
@@ -104,28 +104,32 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 				})
 				return
 			}
+			log.Println("3lach", id)
+			
 			for _, c := range objects.Users[id] {
+				log.Println(c)
 				if c != Conn {
 					c.WriteJSON(map[string]any{
 						"type":            message.Type,
-						"id":              id,
+						"id":              idm,
 						"sender_id":       message.UserId,
 						"sender_username": message.Username,
 						"content":         message.Message,
 						"time":            time.Now(),
 						"status":          "unread",
+						"reciever": message.RecieverId,
 					})
 				}
 			}
-			SendMessage(message, id)
-		}else if message.Type == "update" {
+			SendMessage(message, idm, Conn)
+		} else if message.Type == "update" {
 			log.Println("ha ana ")
 			err := models.UpdateMessState(db, message.UserId, message.RecieverId)
 			log.Println("lwl")
 			if err != nil {
 				log.Println(err.Error(), "line 123")
 				Conn.WriteJSON(map[string]string{
-					"error":err.Error(),
+					"error": err.Error(),
 				})
 				return
 			}
@@ -135,12 +139,18 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func handleConnClosure(Conn *websocket.Conn, id int) {
+	sl:=[]*websocket.Conn{}
 	mu.Lock()
-	delete(objects.Users, id)
+	for _, v := range objects.Users[id] {
+		if v != Conn {
+			sl = append(sl, v)
+		}
+	}
+	objects.Users[id] = sl
 	mu.Unlock()
 	Conn.Close()
 	for ind, val := range objects.Users {
-		if ind != id {
+		if ind != id && len(objects.Users[id]) ==0 {
 			for _, v := range val {
 				v.WriteJSON(map[string]any{
 					"type": "Disconneted",
@@ -166,9 +176,12 @@ func updateLoginState(id int, users []objects.Infos) {
 	}
 }
 
-func SendMessage(message objects.WsData, id int) {
-	if Conns := objects.Users[message.RecieverId]; len(Conns) != 0 {
+func SendMessage(message objects.WsData, id int, conn *websocket.Conn) {
+	Conns := objects.Users[message.RecieverId]
+
+	if len(Conns) != 0 {
 		for _, v := range Conns {
+			log.Println(Conns)
 			v.WriteJSON(map[string]any{
 				"type":            message.Type,
 				"id":              id,
@@ -180,5 +193,4 @@ func SendMessage(message objects.WsData, id int) {
 			})
 		}
 	}
-
 }

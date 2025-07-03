@@ -1,4 +1,4 @@
-import { RenderError } from "./error.js";
+import { RenderError, showNotification } from "./error.js";
 import { showAuthFormSignup, createBaseLayout } from "./render.js";
 import { updateUserlist } from "./user.js";
 
@@ -26,32 +26,55 @@ export function initializeWebSocket() {
             updateUserlist(data.users, data.unreads, 0);
           }
         } else if (data.type === "message") {
-          let ulist = document.getElementsByClassName("users-list")[0];
-          let sender = document.getElementById("user".concat(data.sender_id));
-          ulist.prepend(sender);
-          if (
-            !sender.textContent.includes("💡") &&
-            document.getElementById(`chat-${data.sender_id}`) === null
-          ) {
-            sender.textContent = sender.textContent + "💡";
-          }
-          let chat_area = document.getElementsByClassName(
-            `chat-area${data.sender_id}`
-          );
-          if (chat_area != null) {
-            AppendMessage(
-              data.content,
-              data.id,
-              data.sender_id,
-              data.sender_username
+          if (data.sender_id != parseInt(localStorage.getItem("id"))){
+            showNotification(`you recieved a message from ${data.sender_username}`)
+            let ulist = document.getElementsByClassName("users-list")[0];
+            let sender = document.getElementById("user".concat(data.sender_id));
+            ulist.prepend(sender);
+            if (
+              !sender.textContent.includes("💡") &&
+              document.getElementById(`chat-${data.sender_id}`) === null
+            ) {
+              sender.textContent = sender.textContent + "💡";
+            }
+            let chat_area = document.getElementById(
+              `chat-${data.sender_id}`
             );
-            let Data = {
-              type: "update",
-              id: data.sender_id,
-              receiver_id: parseInt(localStorage.getItem("id")),
-            };
-            console.log("nwdfbdh:", Data);
-            conn.send(JSON.stringify(Data));
+            console.log(chat_area);
+            
+            if (chat_area != null) {
+              AppendMessage(
+                data.content,
+                data.id,
+                data.sender_id,
+                data.sender_username,
+              );
+              let Data = {
+                type: "update",
+                id: data.sender_id,
+                receiver_id: parseInt(localStorage.getItem("id")),
+              };
+              console.log("nwdfbdh:", Data);
+              conn.send(JSON.stringify(Data));
+            }
+          }else {
+            console.log("wa zaba w chta saba");
+            console.log(data.reciever);
+            
+            let chat_area = document.getElementById(
+              `chat-${data.reciever}`
+            );
+            console.log(chat_area);
+            
+            if (chat_area != null) {
+              AppendMessage(
+                data.content,
+                data.id,
+                data.reciever,
+                data.sender_username,
+                "sent"
+              );
+            }
           }
         }
       } catch (err) {
@@ -99,7 +122,7 @@ export function formatDateFromTimestamp(ms) {
   return date.toISOString();
 }
 
-function AppendMessage(message, id, sender_id, sender_username) {
+function AppendMessage(message, id, sender_id, sender_username, type="recieved") {
   const box = document.getElementById(`chat-${sender_id}`);
   if (!box) {
     return;
@@ -114,7 +137,7 @@ function AppendMessage(message, id, sender_id, sender_username) {
   time.append(br);
   div.id = "msg" + id;
   div.className =
-    sender_id === parseInt(localStorage.getItem("id"))
+    type === "sent"
       ? "my-message"
       : "their-message";
   div.textContent = message;

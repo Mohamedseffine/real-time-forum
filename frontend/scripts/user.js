@@ -1,3 +1,4 @@
+import { showNotification } from "./error.js";
 import { createBaseLayout, showAuthFormLogin } from "./render.js";
 import { conn } from "./script.js";
 var LaStInsertedId = 0;
@@ -26,7 +27,7 @@ export async function sendlogindata(username, password) {
       localStorage.setItem("username", data.username);
       createBaseLayout();
     } else {
-      alert(data.error);
+      showNotification(data.error);
       throw new Error(data.message || "Login failed");
     }
   } catch (error) {
@@ -70,7 +71,7 @@ export async function sendAuthData(
       createBaseLayout();
     } else {
       // throw new Error(data.message);
-      alert(data.error);
+      showNotification(data.error);
     }
   } catch (error) {
     console.error("Signup error:", error);
@@ -102,11 +103,11 @@ export async function setupLogoutButton() {
         showAuthFormLogin();
       } else {
         let data = await res.json();
-        alert(data.error);
+        showNotification(data.error);
       }
     } catch {
       console.error("Logout error ", error);
-      alert(error.error);
+      showNotification(error.error);
     }
   });
 }
@@ -156,7 +157,7 @@ export function setupComment(postId, commentsList, noCommentsEl) {
       input.value = "";
       noCommentsEl?.remove();
     } catch (err) {
-      alert(`Error: ${err.error}`);
+      showNotification(`Error: ${err.error}`);
     }
   });
 }
@@ -178,7 +179,7 @@ export function updateUserlist(users, unreads = [], id) {
     userItem.className = "user-item";
     userItem.textContent = user.username;
     if (unreads != null) {
-      console.log(unreads)
+      console.log(unreads);
       if (unreads.includes(user.id)) {
         userItem.textContent = user.username.concat("💡");
       }
@@ -252,16 +253,21 @@ function openChatWithUser(user) {
   });
 
   const cont = document.getElementById(`chat-${user.id}`);
-  cont.addEventListener("scrollend", async () => {
-    const { scrollTop } = cont;
 
-    if (scrollTop === 0) {
-      console.log(LaStInsertedId);
+  const throttledGetMessages = throttle(
+    async () => {
       LaStInsertedId = await getMessages(
         parseInt(localStorage.getItem("id")),
         user.id,
         LaStInsertedId
       );
+    },
+    2000
+  ); 
+
+  cont.addEventListener("scrollend", async () => {
+    if (cont.scrollTop === 0) {
+      throttledGetMessages();
     }
   });
 }
@@ -311,7 +317,7 @@ export async function getMessages(senderId, receiverId, lastID) {
   const payload = {
     sender_id: senderId,
     receiver_id: receiverId,
-    last_id: lastID, // ask server for n most-recent messages
+    last_id: lastID, 
   };
 
   try {
@@ -368,13 +374,24 @@ export async function getMessages(senderId, receiverId, lastID) {
     });
 
     box.scrollTop = box.scrollHeight;
-    // Hand back the earliest message-id so caller can request the
-    // previous page next time (useful for infinite scroll).
+   
     return messages["messages"].length == 10
       ? messages["messages"][messages["messages"].length - 1].id
       : null;
   } catch (err) {
     console.error("getMessages error:", err);
-    alert(err.error);
+    showNotification(err.error);
   }
+}
+
+function throttle(fn, wait) {
+  let LastTime = 0
+  console.log( "last time now", LastTime);
+  return function throttled(...args) {
+    const now = Date.now();
+    if (now - LastTime >= wait) {
+      LastTime = now;
+      fn.apply(this, ...args);
+    }
+  };
 }

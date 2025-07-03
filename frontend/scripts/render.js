@@ -1,6 +1,6 @@
 import { sendAuthData, sendlogindata, setupLogoutButton } from "./user.js";
 import { conn, initializeWebSocket } from "./script.js";
-import { RenderError } from "./error.js";
+import { RenderError, showNotification } from "./error.js";
 export function showAuthFormLogin() {
   const root = document.getElementById("root");
   root.innerHTML = "";
@@ -150,7 +150,7 @@ function setupPostCreation() {
       ).map((el) => parseInt(el.id));
 
       if (!title || !content) {
-        alert("Please fill in both the title and content.");
+        showNotification("Please fill in both the title and content.");
         return;
       }
 
@@ -174,7 +174,7 @@ function setupPostCreation() {
         let data = await res.json();
         
           if (!res.ok) {
-            alert(data.error);
+            showNotification(data.error);
             if ((data.error = "this is unauthorized")) {
               conn.close()
               localStorage.removeItem("id");
@@ -186,7 +186,7 @@ function setupPostCreation() {
               throw new Error("Failed to create post");
             }
           }
-        alert("Post created successfully!");
+        showNotification("Post created successfully!");
         document.querySelector(".post-title").value = "";
         document.querySelector(".post-creator textarea").value = "";
         document
@@ -194,7 +194,7 @@ function setupPostCreation() {
           .forEach((el) => el.classList.remove("selected"));
         loadPosts();
       } catch (err) {
-        alert(`Error: ${err.error}`);
+        showNotification(`Error: ${err.error}`);
       }
     });
 
@@ -222,6 +222,7 @@ export async function loadPosts() {
         return
       }
     }
+    if (posts == null ) return;
     const feed = document.querySelector(".posts-feed");
     feed.innerHTML = "";
 
@@ -292,7 +293,7 @@ function setupComment(postId) {
       let data = await res.json();
 
       if (!res.ok) {
-        alert(data.error);
+        showNotification(data.error);
         console.log(data);
 
         if ((data.error = "this is unauthorized")) {
@@ -310,7 +311,7 @@ function setupComment(postId) {
       input.value = "";
       retrieve_comments(postId, commentsList, noComments);
     } catch (err) {
-      alert("Error posting comment: " + err.error);
+      showNotification("Error posting comment: " + err.error);
     }
   });
 }

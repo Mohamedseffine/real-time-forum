@@ -535,8 +535,8 @@ textarea:focus::placeholder {
   transition: var(--transition-fast);
 }
 
-.form-group input:focus + label,
-.form-group select:focus + label {
+.form-group input:focus+label,
+.form-group select:focus+label {
   color: var(--primary);
 }
 
@@ -1473,6 +1473,7 @@ textarea:focus::placeholder {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -1711,6 +1712,7 @@ textarea:focus::placeholder {
 
   /* === DARK MODE ENHANCEMENT (CONTINUED) === */
   @media (prefers-color-scheme: dark) {
+
     /* User sidebar dark mode adjustments */
     .users-header {
       background: var(--dark-gradient);
@@ -1893,12 +1895,10 @@ textarea:focus::placeholder {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 100%);
   animation: loading 1.5s infinite;
 }
 
@@ -2187,11 +2187,13 @@ textarea:focus::placeholder {
 }
 
 @keyframes typingDot {
+
   0%,
   60%,
   100% {
     transform: translateY(0);
   }
+
   30% {
     transform: translateY(-4px);
   }
@@ -2289,8 +2291,42 @@ textarea:focus::placeholder {
 }
 
 
-#time-span{
+#time-span {
   display: block;
   all: unset;
   font-size: xx-small;
+}
+
+#custom-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(123, 31, 162, 0.3);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  z-index: 1000;
+  display: none;
+  border-left: 4px solid var(--accent-primary);
+  transform: translateY(-30px);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.3s ease;
+  max-width: 300px;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+}
+
+#custom-notification[style*="display: block"] {
+  transform: translateY(0);
+  opacity: 1;
+  animation: pulse-border 2s infinite;
+}
+
+#custom-notification {
+  right: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  padding: 0.8rem 1rem;
 }
