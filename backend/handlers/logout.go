@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"sync"
 
 	"rt_forum/backend/models"
+	"rt_forum/backend/objects"
 )
 
 type logout struct {
@@ -43,6 +45,10 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	var mu = sync.Mutex{}
+	mu.Lock()
+	delete(objects.Users, id)
+	mu.Unlock()
 	http.SetCookie(w, &http.Cookie{
 		Name:   "token",
 		Value:  "",
@@ -53,7 +59,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
-			"error":"server error",
+			"error": "server error",
 		})
 		return
 	}

@@ -145,6 +145,12 @@ function setupPostCreation() {
       const content = document
         .querySelector(".post-creator textarea")
         .value.trim();
+        console.log(document.querySelectorAll(".category.selected"));
+        
+        if (document.querySelectorAll(".category.selected").length ===0) {
+          showNotification("please select a category")
+          return
+        }
       const selectedCategories = Array.from(
         document.querySelectorAll(".category.selected")
       ).map((el) => parseInt(el.id));
@@ -194,7 +200,9 @@ function setupPostCreation() {
           .forEach((el) => el.classList.remove("selected"));
         loadPosts();
       } catch (err) {
-        showNotification(`Error: ${err.error}`);
+        console.log(err);
+        
+        showNotification(`Error: ${err}`);
       }
     });
 
@@ -320,6 +328,9 @@ function retrieve_comments(postId, commentsList, noComments) {
   fetch(`/retrieve_comments?postid=${postId}`)
     .then((res) => res.json())
     .then((comments) => {
+      if (comments === null) {
+        return
+      }
       commentsList.innerHTML = "";
       if (comments.length === 0) {
         noComments.style.display = "block";

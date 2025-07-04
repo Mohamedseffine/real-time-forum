@@ -254,16 +254,13 @@ function openChatWithUser(user) {
 
   const cont = document.getElementById(`chat-${user.id}`);
 
-  const throttledGetMessages = throttle(
-    async () => {
-      LaStInsertedId = await getMessages(
-        parseInt(localStorage.getItem("id")),
-        user.id,
-        LaStInsertedId
-      );
-    },
-    2000
-  ); 
+  const throttledGetMessages = throttle(async () => {
+    LaStInsertedId = await getMessages(
+      parseInt(localStorage.getItem("id")),
+      user.id,
+      LaStInsertedId
+    );
+  }, 2000);
 
   cont.addEventListener("scrollend", async () => {
     if (cont.scrollTop === 0) {
@@ -281,19 +278,9 @@ function sendMessage(userId) {
   const msgElement = document.createElement("div");
   msgElement.className = "my-message";
   msgElement.textContent = message;
-  const time = document.createElement("h5");
-  let when = new Date(Date.now());
-  when = when.toUTCString();
-  time.id = "time-span";
-  time.innerHTML = `${localStorage.getItem("username")} At ${when}`;
-  const br = document.createElement("div");
-  time.append(br);
-  msgElement.prepend(time);
-  messageBox.appendChild(msgElement);
   let username = document
     .getElementById("user".concat(userId))
     .textContent.replace("💡", "");
-  input.value = "";
   let msg = {
     type: "message",
     message: message,
@@ -303,11 +290,24 @@ function sendMessage(userId) {
     receiver_username: username,
     status: "unread",
   };
-  if (conn.readyState === WebSocket.OPEN) {
+  
+  if (conn.readyState === WebSocket.OPEN && localStorage.getItem("username") != null) {
     conn.send(JSON.stringify(msg));
   } else {
     console.log("websocket not open");
+    return;
   }
+  const time = document.createElement("h5");
+  let when = new Date(Date.now());
+  when = when.toUTCString();
+  time.id = "time-span";
+  time.innerHTML = `${localStorage.getItem("username")} At ${when}`;
+  const br = document.createElement("div");
+  time.append(br);
+  msgElement.prepend(time);
+  messageBox.appendChild(msgElement);
+
+  input.value = "";
 }
 
 export async function getMessages(senderId, receiverId, lastID) {
@@ -317,7 +317,7 @@ export async function getMessages(senderId, receiverId, lastID) {
   const payload = {
     sender_id: senderId,
     receiver_id: receiverId,
-    last_id: lastID, 
+    last_id: lastID,
   };
 
   try {
@@ -374,7 +374,7 @@ export async function getMessages(senderId, receiverId, lastID) {
     });
 
     box.scrollTop = box.scrollHeight;
-   
+
     return messages["messages"].length == 10
       ? messages["messages"][messages["messages"].length - 1].id
       : null;
@@ -385,8 +385,8 @@ export async function getMessages(senderId, receiverId, lastID) {
 }
 
 function throttle(fn, wait) {
-  let LastTime = 0
-  console.log( "last time now", LastTime);
+  let LastTime = 0;
+  console.log("last time now", LastTime);
   return function throttled(...args) {
     const now = Date.now();
     if (now - LastTime >= wait) {
