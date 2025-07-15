@@ -1,7 +1,6 @@
 package objects
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -106,10 +105,9 @@ type WsData struct {
 }
 
 type Infos struct {
-	Id          int            `json:"id"`
-	Username    string         `json:"username"`
-	LastMessage sql.NullString `json:"last_message"`
-	IsActive    int            `json:"active"`
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	IsActive int    `json:"active"`
 }
 
 var Users = make(map[int][]*websocket.Conn)

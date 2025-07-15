@@ -165,12 +165,10 @@ export function updateUserlist(users, unreads = [], id) {
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
 
-  if (!users) {
+  if (users.length === 0) {
     userList.innerHTML = "<p>No users found.</p>";
     return;
   }
-  console.log(users);
-  
 
   users.forEach((user) => {
     if (user.id === parseInt(localStorage.getItem("id"))) return;
@@ -297,8 +295,6 @@ function sendMessage(userId) {
     conn.send(JSON.stringify(msg));
   } else {
     console.log("websocket not open");
-    localStorage.clear()
-    showAuthFormLogin()
     return;
   }
   const time = document.createElement("h5");
