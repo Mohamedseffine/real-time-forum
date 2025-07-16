@@ -190,3 +190,22 @@ func IsExpired(db *sql.DB, token string) (time.Time, error) {
 	return expires_at, err
 }
 
+/*   SELECT u.username
+FROM (
+    SELECT
+        CASE
+            WHEN sender_id = ? THEN receiver_id
+            ELSE sender_id
+        END AS user_id,
+        MAX(creation_date) AS latest_message_time
+    FROM messages
+    WHERE sender_id = ? OR receiver_id = ?
+    GROUP BY user_id
+) AS latest
+JOIN messages m2
+    ON ((m2.sender_id = ? AND m2.receiver_id = latest.user_id)
+     OR (m2.sender_id = latest.user_id AND m2.receiver_id = ?))
+    AND m2.creation_date = latest.latest_message_time
+JOIN users u ON u.id = latest.user_id
+ORDER BY m2.creation_date DESC
+*/
