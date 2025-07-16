@@ -55,7 +55,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	objects.Users[id] = append(objects.Users[id], Conn)
 	mu.Unlock()
 	var data objects.WsData
-	users, err := models.GetUsersWithNoMess(db, id)
+	users, err := models.GetAllUsersBymessDate(db, id)
 	if err != nil {
 		log.Println(err, "line 70")
 		Conn.WriteJSON(map[string]any{
@@ -63,16 +63,10 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
-	messusers, err := models.GetUsersWithMess(db, id)
 	for i := range users {
-		if len(objects.Users[users[i].Id]) != 0 {
+		if objects.Users[users[i].Id] != nil {
 			users[i].IsActive = 1
 		}
-	}
-	log.Println(messusers)
-
-	if len(messusers) != 0 {
-		log.Println(messusers)
 	}
 	unreadMess, err := models.UnreadMess(db, id)
 	if err != nil {
@@ -110,6 +104,8 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 				})
 				return
 			}
+			log.Println("3lach", id)
+			
 			for _, c := range objects.Users[id] {
 				log.Println(c)
 				if c != Conn {
@@ -121,7 +117,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 						"content":         message.Message,
 						"time":            time.Now(),
 						"status":          "unread",
-						"reciever":        message.RecieverId,
+						"reciever": message.RecieverId,
 					})
 				}
 			}
@@ -143,7 +139,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func handleConnClosure(Conn *websocket.Conn, id int) {
-	sl := []*websocket.Conn{}
+	sl:=[]*websocket.Conn{}
 	mu.Lock()
 	for _, v := range objects.Users[id] {
 		if v != Conn {
@@ -154,7 +150,7 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 	mu.Unlock()
 	Conn.Close()
 	for ind, val := range objects.Users {
-		if ind != id && len(objects.Users[id]) == 0 {
+		if ind != id && len(objects.Users[id]) ==0 {
 			for _, v := range val {
 				v.WriteJSON(map[string]any{
 					"type": "Disconneted",

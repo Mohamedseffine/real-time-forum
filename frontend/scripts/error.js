@@ -11,7 +11,9 @@ export function RenderError(Str , status, message) {
     </div>
     `
     document.getElementById("back-butt").addEventListener('click', ()=>{
-        body.innerHTML=``
+        body.innerHTML=`
+        <div id="root"></div>
+        `
         history.replaceState(null, null, "/")
         Init()
     });
@@ -19,7 +21,7 @@ export function RenderError(Str , status, message) {
 
 
 export function showNotification(message) {
-  let el = document.getElementById("custom-notification");
+  const el = document.getElementById("custom-notification");
   el.textContent = message;
   el.style.display = "block";
   setTimeout(() => {

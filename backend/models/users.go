@@ -152,9 +152,8 @@ func GetId(db *sql.DB, token string) (int, error) {
 	return id, nil
 }
 
-func GetUsersWithNoMess(db *sql.DB, id int) ([]objects.Infos, error) {
-	query := `SELECT expires_at FROM sessions WHERE token = ?`
-
+func GetAllUsersBymessDate(db *sql.DB, id int) ([]objects.Infos, error) {
+	query := `SELECT id,username FROM users WHERE id != ?`
 
 	stm, err := db.Prepare(query)
 	if err != nil {
@@ -171,7 +170,7 @@ func GetUsersWithNoMess(db *sql.DB, id int) ([]objects.Infos, error) {
 	for rows.Next() {
 
 		var user objects.Infos
-		err = rows.Scan(&user.Id, &user.Username, &user.LastMess)
+		err = rows.Scan(&user.Id, &user.Username)
 		if err != nil {
 			log.Fatal("line 193", err.Error())
 			return nil, err
@@ -191,36 +190,3 @@ func IsExpired(db *sql.DB, token string) (time.Time, error) {
 	return expires_at, err
 }
 
-func GetUsersWithMess(db *sql.DB, id int) ([]objects.Infos, error) {
-	query := `SELECT DISTINCT 
-    u.id,
-    u.username,
-    MAX(m.recieved_at) AS last_interaction_date
-FROM users u
-JOIN messages m ON 
-    (m.sender_id = u.id AND m.receiver_id = $1) OR
-    (m.sender_id = $1 AND m.receiver_id = u.id)
-WHERE u.id != $1  
-GROUP BY u.id, u.username
-ORDER BY last_interaction_date DESC;`
-
-	stm, err := db.Prepare(query)
-	if err != nil {
-		return nil, err
-	}
-	rows, err := stm.Query(id)
-	if err != nil {
-		return nil, err
-	}
-	users := []objects.Infos{}
-
-	for rows.Next() {
-		user := objects.Infos{}
-		err := rows.Scan(&user.Id, &user.Username, &user.LastMess)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, user)
-	}
-	return users, nil
-}

@@ -164,8 +164,9 @@ export function setupComment(postId, commentsList, noCommentsEl) {
 export function updateUserlist(users, unreads = [], id) {
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
+  console.log(users, "yo nigga why just why");
 
-  if (!users) {
+  if (!users || users.length == 1) {
     userList.innerHTML = "<p>No users found.</p>";
     return;
   }
@@ -273,7 +274,8 @@ function sendMessage(userId) {
   const input = document.querySelector(".chat-input");
   const message = input.value.trim();
   if (!message) return;
-
+  const userList = document.querySelector(".users-list");
+  userList.prepend(document.getElementById("user".concat(userId)));
   const messageBox = document.getElementById(`chat-${userId}`);
   const msgElement = document.createElement("div");
   msgElement.className = "my-message";
@@ -290,14 +292,13 @@ function sendMessage(userId) {
     receiver_username: username,
     status: "unread",
   };
-  
-  if (conn.readyState === WebSocket.OPEN && localStorage.getItem("username") != null) {
+
+  if (
+    conn.readyState === WebSocket.OPEN &&
+    localStorage.getItem("username") != null
+  ) {
     conn.send(JSON.stringify(msg));
   } else {
-    document.getElementsByClassName("chat-area")[0].remove()
-    localStorage.clear()
-    showAuthFormLogin()
-    showNotification("you are not logged in")
     console.log("websocket not open");
     return;
   }
