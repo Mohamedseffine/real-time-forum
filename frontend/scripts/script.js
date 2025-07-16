@@ -27,6 +27,8 @@ export function initializeWebSocket() {
           }
         } else if (data.type === "message") {
           if (data.sender_id != parseInt(localStorage.getItem("id"))){
+            console.log(data);
+            
             showNotification(`you recieved a message from ${data.sender_username}`)
             let ulist = document.getElementsByClassName("users-list")[0];
             let sender = document.getElementById("user".concat(data.sender_id));

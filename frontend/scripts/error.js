@@ -1,7 +1,7 @@
 import { Init } from "./script.js";
 
 export function RenderError(Str , status, message) {
-    const body = document.body
+    const body = document.getElementById("root")
     body.innerHTML = ""
     body.innerHTML= `<div class="error-container">
     <h1 id="err-status">${status}</h1>
@@ -11,9 +11,7 @@ export function RenderError(Str , status, message) {
     </div>
     `
     document.getElementById("back-butt").addEventListener('click', ()=>{
-        body.innerHTML=`
-        <div id="root"></div>
-        `
+        body.innerHTML=``
         history.replaceState(null, null, "/")
         Init()
     });
@@ -21,7 +19,7 @@ export function RenderError(Str , status, message) {
 
 
 export function showNotification(message) {
-  const el = document.getElementById("custom-notification");
+  let el = document.getElementById("custom-notification");
   el.textContent = message;
   el.style.display = "block";
   setTimeout(() => {

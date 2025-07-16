@@ -165,7 +165,7 @@ export function updateUserlist(users, unreads = [], id) {
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
 
-  if (users.length === 0) {
+  if (!users) {
     userList.innerHTML = "<p>No users found.</p>";
     return;
   }
@@ -294,6 +294,10 @@ function sendMessage(userId) {
   if (conn.readyState === WebSocket.OPEN && localStorage.getItem("username") != null) {
     conn.send(JSON.stringify(msg));
   } else {
+    document.getElementsByClassName("chat-area")[0].remove()
+    localStorage.clear()
+    showAuthFormLogin()
+    showNotification("you are not logged in")
     console.log("websocket not open");
     return;
   }

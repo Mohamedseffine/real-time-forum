@@ -152,19 +152,9 @@ func GetId(db *sql.DB, token string) (int, error) {
 	return id, nil
 }
 
-func GetAllUsersBymessDate(db *sql.DB, id int) ([]objects.Infos, error) {
-	query := `SELECT 
-    u.id,
-    u.username
-FROM 
-    users u
-LEFT JOIN 
-    messages m ON ( m.sender_id = $1 OR  m.receiver_id = $1 )
-GROUP BY 
-    u.id, u.username
-ORDER BY 
-    CASE WHEN MAX(m.recieved_at) IS NULL THEN 1 ELSE 0 END,
-    MAX(m.recieved_at) ASC;`
+func GetUsersWithNoMess(db *sql.DB, id int) ([]objects.Infos, error) {
+	query := `SELECT expires_at FROM sessions WHERE token = ?`
+
 
 	stm, err := db.Prepare(query)
 	if err != nil {
@@ -181,7 +171,7 @@ ORDER BY
 	for rows.Next() {
 
 		var user objects.Infos
-		err = rows.Scan(&user.Id, &user.Username)
+		err = rows.Scan(&user.Id, &user.Username, &user.LastMess)
 		if err != nil {
 			log.Fatal("line 193", err.Error())
 			return nil, err
@@ -201,57 +191,36 @@ func IsExpired(db *sql.DB, token string) (time.Time, error) {
 	return expires_at, err
 }
 
-/*
-func GetAllUsers(db *sql.DB, id int) ([]objects.Infos, error) {
-	query := `SELECT
+func GetUsersWithMess(db *sql.DB, id int) ([]objects.Infos, error) {
+	query := `SELECT DISTINCT 
     u.id,
     u.username,
-    MAX(datetime(m.recieved_at)) AS last_message_time
-FROM
-    users u
-LEFT JOIN messages m
-    ON $1 = m.sender_id OR $1 = m.receiver_id
-GROUP BY
-    u.id, u.username
-ORDER BY
-    last_message_time DESC NULLS LAST,
-    u.username ASC;
+    MAX(m.recieved_at) AS last_interaction_date
+FROM users u
+JOIN messages m ON 
+    (m.sender_id = u.id AND m.receiver_id = $1) OR
+    (m.sender_id = $1 AND m.receiver_id = u.id)
+WHERE u.id != $1  
+GROUP BY u.id, u.username
+ORDER BY last_interaction_date DESC;`
 
-
-	`
 	stm, err := db.Prepare(query)
 	if err != nil {
-		log.Fatal("line 178", err.Error())
 		return nil, err
 	}
-
 	rows, err := stm.Query(id)
 	if err != nil {
-		log.Fatal("line 184", err.Error())
 		return nil, err
 	}
-	var users []objects.Infos
-	for rows.Next() {
-		var user objects.Infos
-		var receivedAt sql.NullString
+	users := []objects.Infos{}
 
-		err = rows.Scan(&user.Id, &user.Username, &receivedAt)
+	for rows.Next() {
+		user := objects.Infos{}
+		err := rows.Scan(&user.Id, &user.Username, &user.LastMess)
 		if err != nil {
-			log.Fatal("line 193", err.Error())
 			return nil, err
 		}
-
-		if receivedAt.Valid {
-			parsedTime, err := time.Parse("2006-01-02 15:04:05", receivedAt.String)
-			if err == nil {
-				user.LastMessageTime = parsedTime // Add this field in your struct if needed
-			}
-		}
-
 		users = append(users, user)
 	}
-
 	return users, nil
 }
-
-*/
