@@ -94,7 +94,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	Conn.WriteJSON(data)
 	updateLoginState(id, data.Users)
-	log.Println("things just ain't the same for ganhsters",objects.Users)
+	log.Println("things just ain't the same for ganhsters", objects.Users)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)
@@ -144,6 +144,8 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 				})
 				return
 			}
+		} else if message.Type == "typing" {
+			typing(message.UserId, message.RecieverId)
 		}
 	}
 
@@ -203,5 +205,17 @@ func SendMessage(message objects.WsData, id int, conn *websocket.Conn) {
 				"status":          "unread",
 			})
 		}
+	}
+}
+
+func typing(senderId int, receiverId int) {
+	if len(objects.Users[receiverId]) == 0 {
+		return
+	}
+	for _, v := range objects.Users[receiverId] {
+		v.WriteJSON(map[string]any{
+			"type":   "typing",
+			"sender": senderId,
+		})
 	}
 }

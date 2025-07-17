@@ -44,8 +44,8 @@ export async function sendAuthData(
   gender,
   age
 ) {
-  if (typeof age !== "number" || age < 15 || age > 120) {
-    showNotification("plese enter your real age ")
+  if (age < 15 || age > 120) {
+    showNotification("please enter an age between 15 and 120")
     return
   }
   const authdata = {
@@ -262,11 +262,19 @@ function openChatWithUser(user) {
   console.log(chatInput);
 
   chatInput.addEventListener("input", (evt) => {
+    if (conn.readyState === WebSocket.OPEN) {
+      conn.send(JSON.stringify({
+        type : "typing",
+        id : parseInt(localStorage.getItem("id")),
+        receiver_id : user.id,
+      }))
+    }
     console.log(evt.data);
   });
 
   const sendBtn = chatArea.querySelector(".send-btn");
   sendBtn.addEventListener("click", () => {
+  
     sendMessage(user.id);
   });
 

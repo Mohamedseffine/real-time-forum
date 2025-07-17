@@ -17,7 +17,7 @@ export function initializeWebSocket() {
         const data = JSON.parse(evt.data);
         if (data.type === "all_users") {
           console.log(data);
-          
+
           updateUserlist(data.users, data.unreads, 0);
         } else if (data.type === "Disconneted") {
           document.getElementById("user" + data.id).classList.remove("active");
@@ -26,12 +26,14 @@ export function initializeWebSocket() {
             document.getElementById("user" + data.id).classList.add("active");
           } else if (document.getElementById("user" + data.id) === null) {
             console.log(data.users);
-            
+
             updateUserlist(data.users, data.unreads);
           }
         } else if (data.type === "message") {
-          if (data.sender_id != parseInt(localStorage.getItem("id"))){
-            showNotification(`you recieved a message from ${data.sender_username}`)
+          if (data.sender_id != parseInt(localStorage.getItem("id"))) {
+            showNotification(
+              `you recieved a message from ${data.sender_username}`
+            );
             let ulist = document.getElementsByClassName("users-list")[0];
             let sender = document.getElementById("user".concat(data.sender_id));
             ulist.prepend(sender);
@@ -41,17 +43,15 @@ export function initializeWebSocket() {
             ) {
               sender.textContent = sender.textContent + "💡";
             }
-            let chat_area = document.getElementById(
-              `chat-${data.sender_id}`
-            );
+            let chat_area = document.getElementById(`chat-${data.sender_id}`);
             console.log(chat_area);
-            
+
             if (chat_area != null) {
               AppendMessage(
                 data.content,
                 data.id,
                 data.sender_id,
-                data.sender_username,
+                data.sender_username
               );
               let Data = {
                 type: "update",
@@ -61,15 +61,13 @@ export function initializeWebSocket() {
               console.log("nwdfbdh:", Data);
               conn.send(JSON.stringify(Data));
             }
-          }else {
+          } else {
             console.log("wa zaba w chta saba");
             console.log(data.reciever);
-            
-            let chat_area = document.getElementById(
-              `chat-${data.reciever}`
-            );
+
+            let chat_area = document.getElementById(`chat-${data.reciever}`);
             console.log(chat_area);
-            
+
             if (chat_area != null) {
               AppendMessage(
                 data.content,
@@ -80,6 +78,10 @@ export function initializeWebSocket() {
               );
             }
           }
+        } else if (data.type == "typing") {
+          console.log("ana dkhelt", data);
+
+          TypingHandler(data.sender);
         }
       } catch (err) {
         console.error("Error parsing WebSocket message:", err);
@@ -126,7 +128,13 @@ export function formatDateFromTimestamp(ms) {
   return date.toISOString();
 }
 
-function AppendMessage(message, id, sender_id, sender_username, type="recieved") {
+function AppendMessage(
+  message,
+  id,
+  sender_id,
+  sender_username,
+  type = "recieved"
+) {
   const box = document.getElementById(`chat-${sender_id}`);
   if (!box) {
     return;
@@ -140,11 +148,20 @@ function AppendMessage(message, id, sender_id, sender_username, type="recieved")
   const br = document.createElement("div");
   time.append(br);
   div.id = "msg" + id;
-  div.className =
-    type === "sent"
-      ? "my-message"
-      : "their-message";
+  div.className = type === "sent" ? "my-message" : "their-message";
   div.textContent = message;
   div.prepend(time);
   box.append(div);
+}
+
+function TypingHandler(sender_id) {
+  const user = document.getElementById("user".concat(sender_id));
+  if (user == null) {
+    showNotification("null element");
+    return;
+  }
+  console.log("typing");
+  if (!user.innerHTML.includes("typing...")) {
+    user.innerHTML = user.innerHTML.concat(`<span style="color:red;">typing...<span>`);
+  }
 }
