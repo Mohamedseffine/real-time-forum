@@ -78,6 +78,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			users[i].IsActive = 1
 		}
 	}
+	log.Println(users)
 	unreadMess, err := models.UnreadMess(db, id)
 	if err != nil {
 		log.Println(err, "line 53")
@@ -93,7 +94,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	Conn.WriteJSON(data)
 	updateLoginState(id, data.Users)
-	log.Println(objects.Users)
+	log.Println("things just ain't the same for ganhsters",objects.Users)
 	for {
 		var message objects.WsData
 		err := Conn.ReadJSON(&message)

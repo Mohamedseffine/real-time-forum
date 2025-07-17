@@ -44,6 +44,10 @@ export async function sendAuthData(
   gender,
   age
 ) {
+  if (typeof age !== "number" || age < 15 || age > 120) {
+    showNotification("plese enter your real age ")
+    return
+  }
   const authdata = {
     firstname: firstname,
     lastname: lastname,
@@ -161,25 +165,25 @@ export function setupComment(postId, commentsList, noCommentsEl) {
     }
   });
 }
-export function updateUserlist(users, unreads = [], id) {
+export function updateUserlist(users, unreads = []) {
   const userList = document.querySelector(".users-list");
   userList.innerHTML = "";
   console.log(users, "yo nigga why just why");
-
-  if (!users || users[0].id === parseInt(localStorage.getItem("id"))) {
+  
+  if (!users ||( users.length === 1 && users[0].id === parseInt(localStorage.getItem("id")))) {
+    
     userList.innerHTML = "<p>No users found.</p>";
     return;
   }
-  // log
+  console.log(users , "lwla dazet");
+  
   if (userList.innerHTML === "<p>No users found.</p>") {
     userList.innerHTML = "";
   }
 
   users.forEach((user) => {
     if (user.id === parseInt(localStorage.getItem("id"))) return;
-    if (user.id === id) {
-      return;
-    }
+
     if (document.getElementById("user" + user.id) === null) {
       const userItem = document.createElement("button");
       userItem.className = "user-item";

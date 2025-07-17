@@ -16,6 +16,8 @@ export function initializeWebSocket() {
       try {
         const data = JSON.parse(evt.data);
         if (data.type === "all_users") {
+          console.log(data);
+          
           updateUserlist(data.users, data.unreads, 0);
         } else if (data.type === "Disconneted") {
           document.getElementById("user" + data.id).classList.remove("active");
@@ -23,7 +25,9 @@ export function initializeWebSocket() {
           if (document.getElementById("user" + data.id) != null) {
             document.getElementById("user" + data.id).classList.add("active");
           } else if (document.getElementById("user" + data.id) === null) {
-            updateUserlist(data.users, data.unreads, 0);
+            console.log(data.users);
+            
+            updateUserlist(data.users, data.unreads);
           }
         } else if (data.type === "message") {
           if (data.sender_id != parseInt(localStorage.getItem("id"))){

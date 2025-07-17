@@ -208,13 +208,13 @@ func IsExpired(db *sql.DB, token string) (time.Time, error) {
 }
 
 func GetAllUsers(db *sql.DB, id int ) ([]objects.Infos, error) {
-	stm, err := db.Prepare(`SELECT username, id FROM users WHERE id != $1`)
+	stm, err := db.Prepare(`SELECT username, id FROM users`)
 	if err != nil {
 		log.Fatal("line 178", err.Error())
 		return nil, err
 	}
 
-	rows, err := stm.Query(id)
+	rows, err := stm.Query()
 	if err != nil {
 		log.Fatal("line 184", err.Error())
 		return nil, err
