@@ -164,4 +164,7 @@ function TypingHandler(sender_id) {
   if (!user.innerHTML.includes("typing...")) {
     user.innerHTML = user.innerHTML.concat(`<span style="color:red;">typing...<span>`);
   }
+  setTimeout(()=>{
+    user.innerHTML = user.innerHTML.replace(`<span style="color:red;">typing...<span>`, "")
+  }, 200)
 }
