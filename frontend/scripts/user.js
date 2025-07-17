@@ -166,9 +166,13 @@ export function updateUserlist(users, unreads = [], id) {
   userList.innerHTML = "";
   console.log(users, "yo nigga why just why");
 
-  if (!users || users.length == 1) {
+  if (!users || users[0].id === parseInt(localStorage.getItem("id"))) {
     userList.innerHTML = "<p>No users found.</p>";
     return;
+  }
+  // log
+  if (userList.innerHTML === "<p>No users found.</p>") {
+    userList.innerHTML = "";
   }
 
   users.forEach((user) => {
@@ -176,41 +180,43 @@ export function updateUserlist(users, unreads = [], id) {
     if (user.id === id) {
       return;
     }
-    const userItem = document.createElement("button");
-    userItem.className = "user-item";
-    userItem.textContent = user.username;
-    if (unreads != null) {
-      console.log(unreads);
-      if (unreads.includes(user.id)) {
-        userItem.textContent = user.username.concat("💡");
+    if (document.getElementById("user" + user.id) === null) {
+      const userItem = document.createElement("button");
+      userItem.className = "user-item";
+      userItem.textContent = user.username;
+      if (unreads != null) {
+        console.log(unreads);
+        if (unreads.includes(user.id)) {
+          userItem.textContent = user.username.concat("💡");
+        }
       }
+      userItem.id = "user" + user.id;
+      userItem.dataset.userid = user.id;
+
+      if (user.active === 1) {
+        userItem.classList.add("active");
+      }
+
+      // Attach event to open chat
+      userItem.addEventListener("click", async () => {
+        LaStInsertedId = 0;
+        userItem.innerText = userItem.innerText.replace("💡", "");
+        openChatWithUser(user);
+        let Data = {
+          type: "update",
+          id: user.id,
+          receiver_id: parseInt(localStorage.getItem("id")),
+        };
+        conn.send(JSON.stringify(Data));
+        LaStInsertedId = await getMessages(
+          parseInt(localStorage.getItem("id")),
+          user.id,
+          LaStInsertedId
+        );
+      });
+
+      userList.appendChild(userItem);
     }
-    userItem.id = "user" + user.id;
-    userItem.dataset.userid = user.id;
-
-    if (user.active === 1) {
-      userItem.classList.add("active");
-    }
-
-    // Attach event to open chat
-    userItem.addEventListener("click", async () => {
-      LaStInsertedId = 0;
-      userItem.innerText = userItem.innerText.replace("💡", "");
-      openChatWithUser(user);
-      let Data = {
-        type: "update",
-        id: user.id,
-        receiver_id: parseInt(localStorage.getItem("id")),
-      };
-      conn.send(JSON.stringify(Data));
-      LaStInsertedId = await getMessages(
-        parseInt(localStorage.getItem("id")),
-        user.id,
-        LaStInsertedId
-      );
-    });
-
-    userList.appendChild(userItem);
   });
 }
 
@@ -246,6 +252,13 @@ function openChatWithUser(user) {
   closeBtn.addEventListener("click", () => {
     LaStInsertedId = 0;
     chatArea.remove();
+  });
+
+  const chatInput = document.querySelector(".chat-input");
+  console.log(chatInput);
+
+  chatInput.addEventListener("input", (evt) => {
+    console.log(evt.data);
   });
 
   const sendBtn = chatArea.querySelector(".send-btn");

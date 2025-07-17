@@ -63,8 +63,18 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		})
 		return
 	}
+	log.Println(users)
+	usr, err := models.GetAllUsers(db, id)
+	if err != nil {
+		log.Println(err, "line 70")
+		Conn.WriteJSON(map[string]any{
+			"error": err,
+		})
+		return
+	}
+	users = append(users, usr...)
 	for i := range users {
-		if objects.Users[users[i].Id] != nil {
+		if objects.Users[users[i].Id] != nil || len(objects.Users[users[i].Id]) != 0 {
 			users[i].IsActive = 1
 		}
 	}
@@ -105,7 +115,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 				return
 			}
 			log.Println("3lach", id)
-			
+
 			for _, c := range objects.Users[id] {
 				log.Println(c)
 				if c != Conn {
@@ -117,7 +127,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 						"content":         message.Message,
 						"time":            time.Now(),
 						"status":          "unread",
-						"reciever": message.RecieverId,
+						"reciever":        message.RecieverId,
 					})
 				}
 			}
@@ -139,7 +149,7 @@ func HandleWS(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func handleConnClosure(Conn *websocket.Conn, id int) {
-	sl:=[]*websocket.Conn{}
+	sl := []*websocket.Conn{}
 	mu.Lock()
 	for _, v := range objects.Users[id] {
 		if v != Conn {
@@ -150,7 +160,7 @@ func handleConnClosure(Conn *websocket.Conn, id int) {
 	mu.Unlock()
 	Conn.Close()
 	for ind, val := range objects.Users {
-		if ind != id && len(objects.Users[id]) ==0 {
+		if ind != id && len(objects.Users[id]) == 0 {
 			for _, v := range val {
 				v.WriteJSON(map[string]any{
 					"type": "Disconneted",
